@@ -17,7 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* SEMUA STYLE ASLI TETAP SAMA SESUAI FILE FINAL BOSKU */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; min-height: 100%; background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden; }
         
@@ -62,6 +61,8 @@
         .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid rgba(0,0,0,0.55); }
         .member-name h4 { font-size: 20px; font-weight: 900; line-height: 1.05; margin-bottom: 4px; color: #fff; }
         .member-name .id { color: #00e5ff; font-weight: 900; font-size: 14px; }
+        .member-name .jabatan { color: #fff; font-weight: 900; font-size: 13px; margin-top: 2px; letter-spacing: 1px; }
+
         .member-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; font-size: 13px; }
         .field label { display: block; font-size: 10px; font-weight: 800; color: rgba(255,255,255,0.35); margin-bottom: 4px; text-transform: uppercase; }
         .field div { font-weight: 900; font-size: 14px; color: #eee; }
@@ -175,7 +176,10 @@
         <div class="modal-form">
             <h2 id="formTitle" style="font-family:'Orbitron'; font-size:18px; margin-bottom:15px; text-align:center;">TAMBAH MEMBER</h2>
             <input type="hidden" id="editIndex">
-            <input type="hidden" id="firebaseKey"> <div class="form-group"><label>NAMA</label><input type="text" id="f_nama"></div>
+            <input type="hidden" id="firebaseKey"> 
+            
+            <div class="form-group"><label>NAMA</label><input type="text" id="f_nama"></div>
+            <div class="form-group"><label>JABATAN</label><input type="text" id="f_jabatan"></div>
             <div class="form-group"><label>ID</label><input type="text" id="f_id"></div>
             <div class="form-group"><label>NOMOR HP</label><input type="text" id="f_hp"></div>
             <div class="form-group"><label>TTL</label><input type="text" id="f_ttl"></div>
@@ -187,6 +191,7 @@
             <div class="form-group"><label>KECAMATAN</label><input type="text" id="f_kec"></div>
             <div class="form-group"><label>KOTA</label><input type="text" id="f_kota"></div>
             <div class="form-group"><label>PROVINSI</label><input type="text" id="f_prov"></div>
+            <div class="form-group"><label>NEGARA</label><input type="text" id="f_negara"></div>
             <div class="form-group"><label>KODE POS</label><input type="text" id="f_pos"></div>
             <div class="form-group"><label>AGAMA</label><input type="text" id="f_agama"></div>
             <div class="form-group"><label>PEKERJAAN</label><input type="text" id="f_kerja"></div>
@@ -202,7 +207,6 @@
     <input type="file" id="logoInput" hidden accept="image/*">
 
     <script>
-        // SISTEM FIREBASE DAN LOGIC TETAP SAMA PERSIS
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -311,6 +315,7 @@
             document.getElementById("editIndex").value = idx;
             document.getElementById("firebaseKey").value = membersKeys[idx];
             document.getElementById("f_nama").value = m.nama;
+            document.getElementById("f_jabatan").value = m.jabatan || ""; 
             document.getElementById("f_id").value = m.id;
             document.getElementById("f_hp").value = m.hp;
             document.getElementById("f_ttl").value = m.ttl;
@@ -320,6 +325,7 @@
             document.getElementById("f_kec").value = m.kec;
             document.getElementById("f_kota").value = m.kota;
             document.getElementById("f_prov").value = m.prov;
+            document.getElementById("f_negara").value = m.negara || "Indonesia";
             document.getElementById("f_pos").value = m.pos;
             document.getElementById("f_agama").value = m.agama;
             document.getElementById("f_kerja").value = m.kerja;
@@ -329,13 +335,14 @@
         }
 
         function closeForm() { document.getElementById("formOverlay").classList.remove("active"); }
-        function clearForm() { ["f_nama","f_id","f_hp","f_ttl","f_alamat","f_kel","f_kec","f_kota","f_prov","f_pos","f_agama","f_kerja","f_hobby","f_komitmen"].forEach(id=>document.getElementById(id).value=""); }
+        function clearForm() { ["f_nama","f_jabatan","f_id","f_hp","f_ttl","f_alamat","f_kel","f_kec","f_kota","f_prov","f_negara","f_pos","f_agama","f_kerja","f_hobby","f_komitmen"].forEach(id=>document.getElementById(id).value=""); }
 
         function simpanMember() {
             const idx = parseInt(document.getElementById("editIndex").value);
             const key = document.getElementById("firebaseKey").value;
             const data = {
                 nama: document.getElementById("f_nama").value.toUpperCase(),
+                jabatan: document.getElementById("f_jabatan").value || "Anggota",
                 id: document.getElementById("f_id").value,
                 hp: document.getElementById("f_hp").value,
                 ttl: document.getElementById("f_ttl").value,
@@ -345,6 +352,7 @@
                 kec: document.getElementById("f_kec").value,
                 kota: document.getElementById("f_kota").value,
                 prov: document.getElementById("f_prov").value,
+                negara: document.getElementById("f_negara").value || "Indonesia",
                 pos: document.getElementById("f_pos").value,
                 agama: document.getElementById("f_agama").value,
                 kerja: document.getElementById("f_kerja").value,
@@ -368,7 +376,11 @@
                     card.innerHTML = `
                         <div class="member-header">
                             <div class="photo-ring"><img src="${m.foto || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}"></div>
-                            <div class="member-name"><h4>${m.nama}</h4><div class="id">ID: ${m.id}</div></div>
+                            <div class="member-name">
+                                <h4>${m.nama}</h4>
+                                <div class="id">ID: ${m.id}</div>
+                                <div class="jabatan">${m.jabatan || 'Anggota'}</div>
+                            </div>
                         </div>
                         <div class="member-grid">
                             <div class="field"><label>TTL</label><div>${m.ttl}</div></div>
@@ -378,12 +390,12 @@
                             <div class="field"><label>Kecamatan</label><div>${m.kec}</div></div>
                             <div class="field"><label>Kota</label><div>${m.kota}</div></div>
                             <div class="field"><label>Provinsi</label><div>${m.prov}</div></div>
+                            <div class="field"><label>Negara</label><div>${m.negara || "Indonesia"}</div></div>
                             <div class="field"><label>Kode Pos</label><div>${m.pos}</div></div>
                             <div class="field"><label>Agama</label><div>${m.agama}</div></div>
                             <div class="field"><label>No HP</label><div>${m.hp}</div></div>
                             <div class="field"><label>Pekerjaan</label><div>${m.kerja}</div></div>
                             <div class="field"><label>Hobby</label><div>${m.hobby}</div></div>
-                            <div class="field"><label>Negara</label><div>Indonesia</div></div>
                         </div>
                         <div class="komitmen-box"><h5>KOMITMEN</h5><p>${m.komitmen}</p></div>
                         <div class="icon-actions">
@@ -425,8 +437,8 @@
         }
 
         function exportCSV() {
-            let csv = "ID,Nama,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Agama,Pekerjaan,Hobby,Komitmen\n";
-            members.forEach(m=> csv += `${m.id},${m.nama},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
+            let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
+            members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href=url; a.download='data_member_nafas.csv'; a.click();
