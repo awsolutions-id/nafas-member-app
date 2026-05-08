@@ -433,7 +433,30 @@
         }
 
         function resetFoto() {
-            if(confirm("Reset semua foto member di database?")) { membersKeys.forEach(key => dbRef.child(key).update({ foto: "" })); }
+            const pilihan = prompt("PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:");
+
+            if (pilihan === "1") {
+                if (confirm("PERINGATAN: Hapus SEMUA foto member di database?")) {
+                    membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
+                    alert("Semua foto berhasil dihapus!");
+                }
+            } else if (pilihan === "2") {
+                const idTarget = prompt("Masukkan Nomor ID Member yang fotonya ingin dihapus:");
+                if (idTarget) {
+                    const memberDitemukan = members.findIndex(m => m.id == idTarget);
+                    if (memberDitemukan !== -1) {
+                        const key = membersKeys[memberDitemukan];
+                        if (confirm("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?")) {
+                            dbRef.child(key).update({ foto: "" });
+                            alert("Foto Member ID " + idTarget + " berhasil direset!");
+                        }
+                    } else {
+                        alert("Maaf, Member dengan ID " + idTarget + " tidak ditemukan.");
+                    }
+                }
+            } else {
+                alert("Pilihan dibatalkan atau salah ketik.");
+            }
         }
 
         function exportCSV() {
