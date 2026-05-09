@@ -76,9 +76,7 @@
     <div id="pageBeranda" class="page">
         <div class="main-wrapper">
             <div>
-                <div class="logo-container">
-                    <div id="logoDisplay"></div>
-                </div>
+                <div class="logo-container"><div id="logoDisplay"></div></div>
                 <h2>NAFAS INDONESIA</h2>
                 <p class="subtitle">NEW AMEL FANS SEJATI</p>
             </div>
@@ -122,15 +120,11 @@
             { user: "sekretaris_nafas", pass: "Sekretaris2026" }
         ];
 
-        let members = [];
-        let membersKeys = [];
-
         function cekLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
 
             const isPengelola = PENGELOLA.find(acc => acc.user === u && acc.pass === p);
-            
             if(isPengelola) {
                 showPage('pageControl');
                 pantauStatus();
@@ -174,13 +168,11 @@
             document.getElementById(id).classList.add('active');
         }
 
+        let members = [];
         window.onload = function() {
             dbRef.on('value', (snap) => {
-                members = []; membersKeys = [];
-                snap.forEach((child) => {
-                    members.push(child.val());
-                    membersKeys.push(child.key);
-                });
+                members = [];
+                snap.forEach((child) => { members.push(child.val()); });
                 renderMembers();
             });
         };
@@ -189,7 +181,7 @@
             const list = document.getElementById("memberList");
             const q = document.getElementById("searchMember").value.toLowerCase();
             list.innerHTML = "";
-            members.forEach((m, idx) => {
+            members.forEach((m) => {
                 if(m.nama.toLowerCase().includes(q) || m.id.includes(q)) {
                     const card = document.createElement("div");
                     card.className = "member-card";
