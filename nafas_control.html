@@ -50,7 +50,7 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBX...", 
+            apiKey: "AIzaSyBX...", // Jaga API Key Anda tetap rahasia
             databaseURL: "https://nafas-member-app-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "nafas-member-app",
         };
@@ -61,7 +61,10 @@
         const USERS = [{ u: "admin1", p: "123" }, { u: "ketua1", p: "123" }];
 
         window.onload = function() {
-            if (localStorage.getItem('nafas_login') === 'true') { tampilkanPanel(); }
+            // Cek status login lokal
+            if (localStorage.getItem('nafas_login') === 'true') { 
+                tampilkanPanel(); 
+            }
         };
 
         function cekLogin() {
@@ -80,14 +83,17 @@
         }
 
         function setAkses(s) {
-            configRef.child('akses_admin').set(s);
-            alert(s ? "AKSES DIBUKA" : "AKSES DITUTUP");
+            configRef.child('akses_admin').set(s).then(() => {
+                alert(s ? "KONFIRMASI: AKSES TELAH DIBUKA" : "KONFIRMASI: AKSES TELAH DITUTUP");
+            });
         }
 
         function pantauStatus() {
             configRef.child('akses_admin').on('value', (snap) => {
                 const label = document.getElementById('statusLabel');
-                if(snap.val() === true) {
+                const isAktif = snap.val();
+                
+                if(isAktif === true) {
                     label.innerText = "STATUS: TERBUKA";
                     label.style.color = "#2ecc71";
                 } else {
@@ -97,7 +103,10 @@
             });
         }
 
-        function logout() { localStorage.removeItem('nafas_login'); location.reload(); }
+        function logout() { 
+            localStorage.removeItem('nafas_login'); 
+            location.reload(); 
+        }
     </script>
 </body>
 </html>
