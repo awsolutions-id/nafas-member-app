@@ -3,151 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAFAS INDONESIA</title>
+    <title>KONTROL AKSES NAFAS</title>
     
-    <link rel="icon" type="image/png" href="logo_nafas.png">
-    <link rel="apple-touch-icon" href="logo_nafas.png">
-    <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="NAFAS">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#6f42c1">
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; min-height: 100%; background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden; }
-        
-        #loginScreen { position: fixed; inset: 0; background: #0a061a; z-index: 99999; display: flex; justify-content: center; align-items: center; }
-        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px 25px; text-align: center; }
-        .login-box h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 5px; }
-        .login-box p { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 25px; }
-        .login-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; }
-        .btn-login { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; font-family: 'Orbitron'; font-size: 16px; cursor: pointer; }
-
-        .page { display: none; width: 100%; min-height: 100vh; justify-content: center; align-items: center; padding: 20px 10px; }
-        .page.active { display: flex; }
-
-        .admin-control-card { width: 100%; max-width: 350px; background: #161225; border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #333; }
-        .status-info { font-size: 14px; font-weight: bold; margin-bottom: 20px; color: #aaa; }
-
-        .main-wrapper { width: 100%; max-width: 320px; height: 85vh; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
-        .logo-container { width: 110px; height: 110px; margin: 0 auto 10px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.2); overflow: hidden; }
-        .logo-container img { width: 100%; height: 100%; object-fit: cover; }
-        h2 { margin: 10px 0 2px; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: white; letter-spacing: 2px; }
-        .subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.45); font-weight: 600; }
-
-        .app-container { width: 100%; max-width: 420px; background: rgba(10, 6, 26, 0.95); border-radius: 20px; padding: 12px; }
-        .member-card { background: rgba(30, 20, 60, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; margin-bottom: 12px; }
-        .member-header { display: flex; align-items: center; gap: 20px; cursor: pointer; padding: 6px 10px 6px 15px; } 
-        .photo-ring { width: 72px; height: 72px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
-        .photo-ring img { width: 100%; height: 100%; object-fit: cover; border: 2px solid rgba(0,0,0,0.6); }
-        .member-name h4 { font-size: 18px; font-weight: 900; color: #fff; }
-        
-        .btn-control { border: none; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; color: white; font-family: 'Orbitron'; margin: 5px; width: 85%; }
+        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: center; }
+        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: center; }
+        .btn-login { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; cursor: pointer; }
+        .page { display: none; text-align: center; }
+        .page.active { display: block; }
+        .btn-control { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
+        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.3); font-weight: bold; }
+        .logout-link { margin-top: 20px; display: block; color: #666; text-decoration: none; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen">
-        <div class="login-box">
-            <h2>LOGIN SISTEM</h2>
-            <p>Masukkan Kredensial</p>
-            <input type="text" id="user" class="login-input" placeholder="Username">
-            <input type="password" id="pass" class="login-input" placeholder="Password">
-            <button class="btn-login" onclick="cekLogin()">MASUK</button>
-        </div>
+    <div id="loadingScreen" style="display:none;">Memproses...</div>
+
+    <div id="loginScreen" class="login-box">
+        <h2>LOGIN PENGELOLA</h2>
+        <input type="text" id="user" class="login-input" placeholder="Username" autocapitalize="none">
+        <input type="password" id="pass" class="login-input" placeholder="Password">
+        <button class="btn-login" onclick="cekLogin()">MASUK</button>
     </div>
 
-    <div id="pageControl" class="page">
-        <div class="admin-control-card">
-            <h3 style="margin-bottom:10px;">PENGATURAN AKSES</h3>
-            <div id="statusLabel" class="status-info">Memuat status...</div>
-            <button class="btn-control" style="background:#27ae60" onclick="setAkses(true)">BUKA AKSES</button>
-            <button class="btn-control" style="background:#c0392b" onclick="setAkses(false)">TUTUP AKSES</button>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #333;">
-            <button style="background:none; border:none; color:#666;" onclick="location.reload()">LOGOUT</button>
-        </div>
-    </div>
-
-    <div id="pageBeranda" class="page">
-        <div class="main-wrapper">
-            <div>
-                <div class="logo-container"><div id="logoDisplay"></div></div>
-                <h2>NAFAS INDONESIA</h2>
-                <p class="subtitle">NEW AMEL FANS SEJATI</p>
-            </div>
-            <button style="background:linear-gradient(90deg, #8e2de2, #f00073); color:white; border:none; padding:15px; border-radius:30px; font-weight:bold; font-family:'Orbitron';" onclick="showPage('pageMember')">LIHAT MEMBER</button>
-            <button style="margin-top:15px; background:none; border:none; color:#555;" onclick="location.reload()">LOGOUT</button>
-        </div>
-    </div>
-
-    <div id="pageMember" class="page">
-        <div class="app-container">
-            <div style="text-align:center; padding:15px;">
-                <h3 style="color:#00e5ff; font-family:'Orbitron'">DATABASE MEMBER</h3>
-                <input id="searchMember" placeholder="Cari..." oninput="renderMembers()" style="width:100%; padding:10px; margin-top:10px; border-radius:8px; background:#000; color:#fff; border:1px solid #333;"/>
-                <button onclick="showPage('pageBeranda')" style="width:100%; margin-top:10px; padding:10px; background:#444; color:#fff; border-radius:8px; border:none;">KEMBALI</button>
-            </div>
-            <div id="memberList"></div>
-        </div>
+    <div id="pageControl" class="page login-box">
+        <h2>PANEL KONTROL</h2>
+        <div id="statusLabel" class="status-box">Memuat Status...</div>
+        <button class="btn-control" style="background:#27ae60" onclick="setAkses(true)">BUKA AKSES</button>
+        <button class="btn-control" style="background:#c0392b" onclick="setAkses(false)">TUTUP AKSES</button>
+        <div class="logout-link" onclick="logout()">LOGOUT & HAPUS MEMORI</div>
     </div>
 
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
-            authDomain: "nafas-member-app.firebaseapp.com",
             databaseURL: "https://nafas-member-app-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "nafas-member-app",
-            storageBucket: "nafas-member-app.appspot.com",
-            messagingSenderId: "1001199591736",
-            appId: "1:1001199591736:web:fdd9814c9c47feb92021cd"
         };
         
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const dbRef = database.ref('members');
-        const configRef = database.ref('app_config');
+        const configRef = firebase.database().ref('app_config');
 
-        const USER_ADMIN = "naafcfast@gmail.com";
-        const PASS_ADMIN = "Nafas130521";
-
-        const PENGELOLA = [
-            { user: "ketua_nafas", pass: "Ketua2026" },
-            { user: "sekretaris_nafas", pass: "Sekretaris2026" }
+        // DATABASE USER
+        const USERS = [
+            { u: "ketua1", p: "123" },
+            { u: "admin1", p: "123" }
         ];
 
+        // FUNGSI CEK AUTO-LOGIN SAAT HALAMAN DIBUKA
+        window.onload = function() {
+            const sudahLogin = localStorage.getItem('nafas_login');
+            if (sudahLogin === 'true') {
+                tampilkanPanel();
+            }
+        };
+
         function cekLogin() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
+            const userVal = document.getElementById('user').value.toLowerCase().trim();
+            const passVal = document.getElementById('pass').value.trim();
 
-            const isPengelola = PENGELOLA.find(acc => acc.user === u && acc.pass === p);
-            if(isPengelola) {
-                showPage('pageControl');
-                pantauStatus();
-                return;
-            }
-
-            if(u === USER_ADMIN && p === PASS_ADMIN) {
-                configRef.child('akses_admin').once('value', (snap) => {
-                    if(snap.val() === true) {
-                        document.getElementById('loginScreen').style.display = 'none';
-                        showPage('pageBeranda');
-                    } else {
-                        alert("Akses terkunci, hubungi pengelola.");
-                    }
-                });
+            const found = USERS.find(account => account.u === userVal && account.p === passVal);
+            
+            if(found) {
+                // SIMPAN STATUS LOGIN DI HP
+                localStorage.setItem('nafas_login', 'true');
+                tampilkanPanel();
             } else {
-                alert("Username atau Password Salah");
+                alert("Salah ketik, Pak. Coba lagi.");
             }
+        }
+
+        function tampilkanPanel() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('pageControl').classList.add('active');
+            pantauStatus();
         }
 
         function setAkses(status) {
             configRef.child('akses_admin').set(status);
-            alert(status ? "Akses telah dibuka." : "Akses telah ditutup.");
+            alert(status ? "Akses DIBUKA" : "Akses DITUTUP");
         }
 
         function pantauStatus() {
@@ -163,40 +104,9 @@
             });
         }
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        let members = [];
-        window.onload = function() {
-            dbRef.on('value', (snap) => {
-                members = [];
-                snap.forEach((child) => { members.push(child.val()); });
-                renderMembers();
-            });
-        };
-
-        function renderMembers() {
-            const list = document.getElementById("memberList");
-            const q = document.getElementById("searchMember").value.toLowerCase();
-            list.innerHTML = "";
-            members.forEach((m) => {
-                if(m.nama.toLowerCase().includes(q) || m.id.includes(q)) {
-                    const card = document.createElement("div");
-                    card.className = "member-card";
-                    card.innerHTML = `
-                        <div class="member-header">
-                            <div class="photo-ring"><img src="${m.foto || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}"></div>
-                            <div class="member-name">
-                                <h4>${m.nama}</h4>
-                                <div style="color:#00e5ff; font-weight:bold; font-size:13px;">ID: ${m.id}</div>
-                            </div>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                }
-            });
+        function logout() {
+            localStorage.removeItem('nafas_login');
+            location.reload();
         }
     </script>
 </body>
