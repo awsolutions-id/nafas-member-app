@@ -5,28 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROL AKSES NAFAS</title>
     
+    <link rel="icon" href="https://img.icons8.com/fluent/96/000000/lock.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluent/96/000000/lock.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: center; }
-        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; }
+        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
+        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .logo-img { width: 70px; margin-bottom: 10px; }
+        .control-text { font-family: 'Orbitron', sans-serif; color: #00e5ff; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px; display: block; }
+        h2 { font-family: 'Orbitron', sans-serif; color: white; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px; }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: center; }
         .btn-login { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; cursor: pointer; }
         .page { display: none; text-align: center; }
         .page.active { display: block; }
-        .btn-control { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
-        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.3); font-weight: bold; }
-        .logout-link { margin-top: 20px; display: block; color: #666; text-decoration: none; font-size: 12px; cursor: pointer; }
+        .btn-control { width: 100%; padding: 18px; margin: 12px 0; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; font-size: 0.9rem; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px dashed #444; font-weight: bold; font-family: 'Orbitron'; }
+        .logout-link { margin-top: 25px; display: block; color: #555; text-decoration: none; font-size: 11px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen" style="display:none;">Memproses...</div>
-
     <div id="loginScreen" class="login-box">
+        <img src="https://img.icons8.com/fluent/96/000000/lock.png" class="logo-img">
+        <span class="control-text">NAFAS CONTROL</span>
         <h2>LOGIN PENGELOLA</h2>
         <input type="text" id="user" class="login-input" placeholder="Username" autocapitalize="none">
         <input type="password" id="pass" class="login-input" placeholder="Password">
@@ -34,11 +39,13 @@
     </div>
 
     <div id="pageControl" class="page login-box">
-        <h2>PANEL KONTROL</h2>
-        <div id="statusLabel" class="status-box">Memuat Status...</div>
-        <button class="btn-control" style="background:#27ae60" onclick="setAkses(true)">BUKA AKSES</button>
-        <button class="btn-control" style="background:#c0392b" onclick="setAkses(false)">TUTUP AKSES</button>
-        <div class="logout-link" onclick="logout()">LOGOUT & HAPUS MEMORI</div>
+        <img src="https://img.icons8.com/fluent/96/000000/lock.png" class="logo-img">
+        <span class="control-text">NAFAS CONTROL</span>
+        <h2>PANEL AKSES</h2>
+        <div id="statusLabel" class="status-box">MEMUAT...</div>
+        <button class="btn-control" style="background: linear-gradient(45deg, #1d976c, #93f9b9); color: #000;" onclick="setAkses(true)">BUKA AKSES</button>
+        <button class="btn-control" style="background: linear-gradient(45deg, #eb3349, #f45c43);" onclick="setAkses(false)">TUTUP AKSES</button>
+        <div class="logout-link" onclick="logout()">LOGOUT</div>
     </div>
 
     <script>
@@ -51,33 +58,19 @@
         firebase.initializeApp(firebaseConfig);
         const configRef = firebase.database().ref('app_config');
 
-        // DATABASE USER
-        const USERS = [
-            { u: "ketua1", p: "123" },
-            { u: "admin1", p: "123" }
-        ];
+        const USERS = [{ u: "admin1", p: "123" }, { u: "ketua1", p: "123" }];
 
-        // FUNGSI CEK AUTO-LOGIN SAAT HALAMAN DIBUKA
         window.onload = function() {
-            const sudahLogin = localStorage.getItem('nafas_login');
-            if (sudahLogin === 'true') {
-                tampilkanPanel();
-            }
+            if (localStorage.getItem('nafas_login') === 'true') { tampilkanPanel(); }
         };
 
         function cekLogin() {
             const userVal = document.getElementById('user').value.toLowerCase().trim();
             const passVal = document.getElementById('pass').value.trim();
-
-            const found = USERS.find(account => account.u === userVal && account.p === passVal);
-            
-            if(found) {
-                // SIMPAN STATUS LOGIN DI HP
+            if(USERS.find(a => a.u === userVal && a.p === passVal)) {
                 localStorage.setItem('nafas_login', 'true');
                 tampilkanPanel();
-            } else {
-                alert("Salah ketik, Pak. Coba lagi.");
-            }
+            } else { alert("Data salah, Pak."); }
         }
 
         function tampilkanPanel() {
@@ -86,9 +79,9 @@
             pantauStatus();
         }
 
-        function setAkses(status) {
-            configRef.child('akses_admin').set(status);
-            alert(status ? "Akses DIBUKA" : "Akses DITUTUP");
+        function setAkses(s) {
+            configRef.child('akses_admin').set(s);
+            alert(s ? "AKSES DIBUKA" : "AKSES DITUTUP");
         }
 
         function pantauStatus() {
@@ -99,15 +92,12 @@
                     label.style.color = "#2ecc71";
                 } else {
                     label.innerText = "STATUS: TERTUTUP";
-                    label.style.color = "#e74c3c";
+                    label.style.color = "#ff4b2b";
                 }
             });
         }
 
-        function logout() {
-            localStorage.removeItem('nafas_login');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('nafas_login'); location.reload(); }
     </script>
 </body>
 </html>
