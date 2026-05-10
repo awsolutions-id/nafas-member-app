@@ -5,33 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROL AKSES NAFAS</title>
     
-    <link rel="icon" href="https://img.icons8.com/fluent/96/000000/lock.png">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/fluent/96/000000/lock.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
-        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .logo-img { width: 70px; margin-bottom: 10px; }
-        .control-text { font-family: 'Orbitron', sans-serif; color: #00e5ff; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px; display: block; }
-        h2 { font-family: 'Orbitron', sans-serif; color: white; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px; }
+        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        
+        /* Desain Login & Panel */
+        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: center; position: relative; z-index: 1; }
+        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: center; }
         .btn-login { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; cursor: pointer; }
-        .page { display: none; text-align: center; }
+        
+        .page { display: none; }
         .page.active { display: block; }
-        .btn-control { width: 100%; padding: 18px; margin: 12px 0; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; font-size: 0.9rem; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.4); border: 1px dashed #444; font-weight: bold; font-family: 'Orbitron'; }
-        .logout-link { margin-top: 25px; display: block; color: #555; text-decoration: none; font-size: 11px; cursor: pointer; }
+        .btn-control { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
+        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.3); font-weight: bold; }
+
+        /* MODAL CUSTOM (Pengganti Alert agar tulisan awsolutions hilang) */
+        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
+        .alert-content { background: #1a152e; border: 2px solid #00e5ff; padding: 25px; border-radius: 15px; width: 85%; max-width: 300px; text-align: center; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
+        .alert-message { margin-bottom: 20px; line-height: 1.5; font-weight: 600; }
+        .btn-ok { background: #00e5ff; color: #000; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
     </style>
 </head>
 <body>
 
+    <div id="customAlert">
+        <div class="alert-content">
+            <div id="alertMsg" class="alert-message">Pesan disini</div>
+            <button class="btn-ok" onclick="closeAlert()">OKE</button>
+        </div>
+    </div>
+
     <div id="loginScreen" class="login-box">
-        <img src="https://img.icons8.com/fluent/96/000000/lock.png" class="logo-img">
-        <span class="control-text">NAFAS CONTROL</span>
         <h2>LOGIN PENGELOLA</h2>
         <input type="text" id="user" class="login-input" placeholder="Username" autocapitalize="none">
         <input type="password" id="pass" class="login-input" placeholder="Password">
@@ -39,73 +47,73 @@
     </div>
 
     <div id="pageControl" class="page login-box">
-        <img src="https://img.icons8.com/fluent/96/000000/lock.png" class="logo-img">
-        <span class="control-text">NAFAS CONTROL</span>
-        <h2>PANEL AKSES</h2>
-        <div id="statusLabel" class="status-box">MEMUAT...</div>
-        <button class="btn-control" style="background: linear-gradient(45deg, #1d976c, #93f9b9); color: #000;" onclick="setAkses(true)">BUKA AKSES</button>
-        <button class="btn-control" style="background: linear-gradient(45deg, #eb3349, #f45c43);" onclick="setAkses(false)">TUTUP AKSES</button>
-        <div class="logout-link" onclick="logout()">LOGOUT</div>
+        <h2>PANEL KONTROL</h2>
+        <div id="statusLabel" class="status-box">Memuat...</div>
+        <button class="btn-control" style="background:#27ae60" onclick="setAkses(true)">BUKA AKSES</button>
+        <button class="btn-control" style="background:#c0392b" onclick="setAkses(false)">TUTUP AKSES</button>
+        <br><br>
+        <button style="background:none; border:none; color:#666;" onclick="location.reload()">LOGOUT</button>
     </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyBX...", // Jaga API Key Anda tetap rahasia
+            apiKey: "AIzaSyBX...", 
+            authDomain: "nafas-member-app.firebaseapp.com",
             databaseURL: "https://nafas-member-app-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "nafas-member-app",
+            storageBucket: "nafas-member-app.appspot.com",
+            messagingSenderId: "1001199591736",
+            appId: "1:1001199591736:web:fdd9814c9c47feb92021cd"
         };
         
         firebase.initializeApp(firebaseConfig);
         const configRef = firebase.database().ref('app_config');
 
-        const USERS = [{ u: "admin1", p: "123" }, { u: "ketua1", p: "123" }];
+        const USERS = [
+            { u: "ketua1", p: "123" },
+            { u: "admin1", p: "123" }
+        ];
 
-        window.onload = function() {
-            // Cek status login lokal
-            if (localStorage.getItem('nafas_login') === 'true') { 
-                tampilkanPanel(); 
-            }
-        };
+        // Fungsi pengganti Alert standar
+        function tampilPesan(msg) {
+            document.getElementById('alertMsg').innerText = msg;
+            document.getElementById('customAlert').style.display = 'flex';
+        }
+
+        function closeAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
 
         function cekLogin() {
             const userVal = document.getElementById('user').value.toLowerCase().trim();
             const passVal = document.getElementById('pass').value.trim();
-            if(USERS.find(a => a.u === userVal && a.p === passVal)) {
-                localStorage.setItem('nafas_login', 'true');
-                tampilkanPanel();
-            } else { alert("Data salah, Pak."); }
+            const found = USERS.find(account => account.u === userVal && account.p === passVal);
+            
+            if(found) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('pageControl').classList.add('active');
+                pantauStatus();
+            } else {
+                tampilPesan("Gagal masuk, silakan cek kembali.");
+            }
         }
 
-        function tampilkanPanel() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('pageControl').classList.add('active');
-            pantauStatus();
-        }
-
-        function setAkses(s) {
-            configRef.child('akses_admin').set(s).then(() => {
-                alert(s ? "KONFIRMASI: AKSES TELAH DIBUKA" : "KONFIRMASI: AKSES TELAH DITUTUP");
-            });
+        function setAkses(status) {
+            configRef.child('akses_admin').set(status);
+            tampilPesan(status ? "Akses telah DIBUKA" : "Akses telah DITUTUP");
         }
 
         function pantauStatus() {
             configRef.child('akses_admin').on('value', (snap) => {
                 const label = document.getElementById('statusLabel');
-                const isAktif = snap.val();
-                
-                if(isAktif === true) {
+                if(snap.val() === true) {
                     label.innerText = "STATUS: TERBUKA";
                     label.style.color = "#2ecc71";
                 } else {
                     label.innerText = "STATUS: TERTUTUP";
-                    label.style.color = "#ff4b2b";
+                    label.style.color = "#e74c3c";
                 }
             });
-        }
-
-        function logout() { 
-            localStorage.removeItem('nafas_login'); 
-            location.reload(); 
         }
     </script>
 </body>
