@@ -11,7 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* Dasar & Tema Gelap */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: #0a061a; 
@@ -24,7 +23,6 @@
             overflow: hidden; 
         }
 
-        /* Kotak Login & Panel */
         .container-box { 
             width: 90%; 
             max-width: 350px; 
@@ -50,7 +48,6 @@
             color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
         }
 
-        /* Halaman */
         .page { display: none; }
         .page.active { display: block; }
 
@@ -65,27 +62,37 @@
             background: rgba(0,0,0,0.4); font-weight: bold; font-family: 'Orbitron'; font-size: 14px;
         }
 
-        /* --- MODAL NOTIFIKASI CUSTOM (SOLUSI PENGHAPUS TULISAN GITHUB) --- */
+        /* --- MODAL NOTIFIKASI HIJAU NEON --- */
         #notifOverlay { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.9); z-index: 9999; 
             justify-content: center; align-items: center; 
         }
         .notif-card { 
-            background: #1a152e; border: 2px solid #f00073; 
+            background: #0d0d0d; 
+            border: 2px solid #2ecc71; /* Warna Hijau Neon */
             padding: 25px; border-radius: 20px; width: 80%; 
             max-width: 300px; text-align: center; 
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
             animation: popUp 0.3s ease-out;
         }
         @keyframes popUp {
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; }
+        .notif-header {
+            font-family: 'Orbitron', sans-serif;
+            color: #2ecc71;
+            font-size: 12px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; font-weight: 500; }
         .btn-close { 
-            background: #f00073; color: white; border: none; 
-            padding: 8px 25px; border-radius: 8px; font-weight: bold; 
-            cursor: pointer; font-family: 'Orbitron'; font-size: 12px;
+            background: #2ecc71; color: #000; border: none; 
+            padding: 10px 25px; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; font-family: 'Orbitron'; font-size: 11px;
         }
     </style>
 </head>
@@ -93,6 +100,7 @@
 
     <div id="notifOverlay">
         <div class="notif-card">
+            <div class="notif-header">NOTIFIKASI ADMIN</div>
             <div id="notifMsg" class="notif-text">Pesan di sini</div>
             <button class="btn-close" onclick="tutupNotif()">SAYA MENGERTI</button>
         </div>
@@ -116,7 +124,6 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase Bapak
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -130,13 +137,11 @@
         firebase.initializeApp(firebaseConfig);
         const dbConfig = firebase.database().ref('app_config');
 
-        // Data Akun Ringkas
         const DATA_AKUN = [
             { u: "ketua1", p: "123" },
             { u: "admin1", p: "123" }
         ];
 
-        // --- FUNGSI NOTIFIKASI KHUSUS ---
         function kirimNotif(teks) {
             document.getElementById('notifMsg').innerText = teks;
             document.getElementById('notifOverlay').style.display = 'flex';
@@ -146,7 +151,6 @@
             document.getElementById('notifOverlay').style.display = 'none';
         }
 
-        // --- LOGIKA APLIKASI ---
         function prosesLogin() {
             const u = document.getElementById('userInput').value.toLowerCase().trim();
             const p = document.getElementById('passInput').value.trim();
@@ -158,13 +162,13 @@
                 document.getElementById('adminPanel').classList.add('active');
                 hubungkanStatus();
             } else {
-                kirimNotif("Maaf Pak, Username atau Password salah ketik.");
+                kirimNotif("Username atau Password salah ketik.");
             }
         }
 
         function updateAkses(bol) {
             dbConfig.child('akses_admin').set(bol);
-            const info = bol ? "AKSES DIBUKA!\nSekarang Member bisa login." : "AKSES DITUTUP!\nAplikasi telah dikunci kembali.";
+            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nAplikasi telah dikunci kembali.";
             kirimNotif(info);
         }
 
