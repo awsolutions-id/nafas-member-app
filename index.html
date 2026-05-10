@@ -106,16 +106,34 @@
         .form-group label { display: block; font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; outline: none; font-size: 14px; }
         .btn-action { border: none; padding: 10px 15px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; font-family: 'Orbitron', sans-serif; }
+
+        /* --- STYLE NOTIFIKASI KUSTOM NEON MERAH --- */
+        #customNotifOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100000; display: none; justify-content: center; align-items: center; }
+        .notif-box { width: 85%; max-width: 320px; background: #1a162e; border: 2px solid #ff0055; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 0 20px rgba(255, 0, 85, 0.4); animation: zoomIn 0.3s ease; }
+        .notif-msg { font-size: 14px; color: #fff; margin-bottom: 20px; line-height: 1.5; font-weight: 600; }
+        .btn-notif-oke { background: #ff0055; border: none; border-radius: 10px; color: white; padding: 10px 25px; font-family: 'Orbitron'; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 0, 85, 0.3); }
+        .btn-notif-batal { background: transparent; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; padding: 10px 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; margin-right: 10px; }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
+    <div id="customNotifOverlay">
+        <div class="notif-box">
+            <div id="notifMessage" class="notif-msg">Pesan Notifikasi</div>
+            <div id="notifActionContainer">
+                <button id="btnNotifBatal" class="btn-notif-batal" style="display:none;">BATAL</button>
+                <button id="btnNotifOke" class="btn-notif-oke" onclick="tutupNotif()">SAYA MENGERTI</button>
+            </div>
+        </div>
+    </div>
+
     <div id="loginScreen">
         <div class="login-box">
             <h2>LOGIN PENGELOLA</h2>
             <p>Masukkan Username & Password</p>
             <input type="text" id="user" class="login-input" placeholder="Username">
             <input type="password" id="pass" class="login-input" placeholder="Password">
-            <button class="btn-login" onclick="cekLogin()">OTORISASI</button>
+            <button class="btn-login" onclick="cekLogin()">MASUK</button>
         </div>
     </div>
 
@@ -130,9 +148,9 @@
                 <div class="line"></div>
             </div>
             <div class="middle-group">
-                <button class="btn-masuk" onclick="showPage('pageMember')">DATABASE MEMBER</button>
+                <button class="btn-masuk" onclick="showPage('pageMember')">MEMBER</button>
                 <br>
-                <button class="btn-logout" onclick="logout()">LOGOUT SISTEM</button>
+                <button class="btn-logout" onclick="logout()">LOGOUT</button>
             </div>
             <div class="bottom-group">
                 <span class="feature-title">MENU LAYANAN GROUP</span>
@@ -246,12 +264,33 @@
         let members = [];
         let membersKeys = [];
 
-        // --- SISTEM PENCEGAT OTOMATIS (KEAMANAN) ---
+        /* --- FUNGSI NOTIFIKASI KUSTOM --- */
+        let confirmCallback = null;
+        function tampilkanPesan(msg, type = "alert", callback = null) {
+            document.getElementById('notifMessage').innerText = msg;
+            const btnBatal = document.getElementById('btnNotifBatal');
+            const btnOke = document.getElementById('btnNotifOke');
+            
+            if (type === "confirm") {
+                btnBatal.style.display = "inline-block";
+                btnOke.innerText = "YA";
+                confirmCallback = callback;
+                btnBatal.onclick = () => { tutupNotif(); confirmCallback(false); };
+                btnOke.onclick = () => { tutupNotif(); confirmCallback(true); };
+            } else {
+                btnBatal.style.display = "none";
+                btnOke.innerText = "SAYA MENGERTI";
+                btnOke.onclick = tutupNotif;
+            }
+            document.getElementById('customNotifOverlay').style.display = 'flex';
+        }
+        function tutupNotif() { document.getElementById('customNotifOverlay').style.display = 'none'; }
+
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                alert("AKSES DITUTUP: Pengelola Pusat telah mengunci sistem.");
-                location.reload(); 
+                tampilkanPesan("AKSES DITUTUP: Pengelola Pusat telah mengunci sistem.");
+                setTimeout(() => { location.reload(); }, 3000);
             }
         });
 
@@ -261,24 +300,26 @@
             
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    alert("OTORISASI GAGAL: Akses Database Member NAFAS sedang TERTUTUP.");
+                    tampilkanPesan("Gagal Masuk: Akses sistem sedang TERTUTUP.");
                     return;
                 }
                 
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { alert('PENGELOLA: Username atau Password Salah!'); }
+                } else { tampilkanPesan('Username atau Password Salah!'); }
             });
         }
 
         function logout() {
-            if(confirm("PENGELOLA: Keluar dari aplikasi?")) {
-                document.getElementById('user').value = "";
-                document.getElementById('pass').value = "";
-                document.getElementById('loginScreen').style.display = 'flex';
-                showPage('pageBeranda');
-            }
+            tampilkanPesan("Keluar dari aplikasi?", "confirm", (hasil) => {
+                if(hasil) {
+                    document.getElementById('user').value = "";
+                    document.getElementById('pass').value = "";
+                    document.getElementById('loginScreen').style.display = 'flex';
+                    showPage('pageBeranda');
+                }
+            });
         }
 
         window.onload = function() {
@@ -332,11 +373,11 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            alert("DATA TERENKRIPSI: Berhasil disimpan ke Awan NAFAS!");
+            tampilkanPesan("Berhasil disimpan ke Awan!");
         }
 
         function openFormTambah() {
-            document.getElementById("formTitle").innerText = "TAMBAH MEMBER NAFAS";
+            document.getElementById("formTitle").innerText = "TAMBAH MEMBER";
             document.getElementById("editIndex").value = "-1";
             document.getElementById("firebaseKey").value = "";
             clearForm();
@@ -345,7 +386,7 @@
 
         function openFormEdit(idx) {
             const m = members[idx];
-            document.getElementById("formTitle").innerText = "EDIT MEMBER NAFAS";
+            document.getElementById("formTitle").innerText = "EDIT MEMBER";
             document.getElementById("editIndex").value = idx;
             document.getElementById("firebaseKey").value = membersKeys[idx];
             document.getElementById("f_nama").value = m.nama;
@@ -396,7 +437,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            alert("DATA TERENKRIPSI: Database Member NAFAS Berhasil Diperbarui!");
+            tampilkanPesan("Data Member Berhasil Disimpan!");
         }
 
         function renderMembers() {
@@ -433,7 +474,7 @@
                                 <div class="field"><label>Pekerjaan</label><div>${m.kerja}</div></div>
                                 <div class="field"><label>Hobby</label><div>${m.hobby}</div></div>
                             </div>
-                            <div class="komitmen-box"><h5>KOMITMEN MEMBER</h5><p>${m.komitmen}</p></div>
+                            <div class="komitmen-box"><h5>KOMITMEN</h5><p>${m.komitmen}</p></div>
                             <div class="icon-actions">
                                 <div class="icon-btn" onclick="window.open('https://www.google.com/maps/search/${m.alamat}')"><img src="https://cdn-icons-png.flaticon.com/512/684/684908.png"><span>MAPS</span></div>
                                 <div class="icon-btn" onclick="location.href='tel:${m.hp}'"><img src="https://cdn-icons-png.flaticon.com/512/724/724664.png"><span>TELP</span></div>
@@ -466,27 +507,35 @@
 
         function hapusMember(idx) {
             const key = membersKeys[idx];
-            if(confirm("PENGELOLA: Hapus permanen data member ini dari Database NAFAS?")) { dbRef.child(key).remove(); }
+            tampilkanPesan("Hapus data member ini dari Awan selamanya?", "confirm", (hasil) => {
+                if(hasil) { dbRef.child(key).remove(); }
+            });
         }
 
         function resetFoto() {
-            const pilihan = prompt("PENGELOLA: PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:");
+            tampilkanPesan("FITUR RESET FOTO AKTIF. Gunakan tombol Tambah/Edit untuk mengatur foto satuan.", "alert");
+            // Bagian prompt reset foto massal tetap menggunakan prompt browser karena butuh input angka
+            const pilihan = prompt("PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:");
             if (pilihan === "1") {
-                if (confirm("PERINGATAN PENGELOLA: Hapus SEMUA foto member di database?")) {
-                    membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
-                    alert("SISTEM: Seluruh foto berhasil direset!");
-                }
+                tampilkanPesan("PERINGATAN: Hapus SEMUA foto member di database?", "confirm", (hasil) => {
+                    if (hasil) {
+                        membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
+                        tampilkanPesan("Semua foto berhasil dihapus!");
+                    }
+                });
             } else if (pilihan === "2") {
                 const idTarget = prompt("Masukkan Nomor ID Member yang fotonya ingin dihapus:");
                 if (idTarget) {
                     const memberDitemukan = members.findIndex(m => m.id == idTarget);
                     if (memberDitemukan !== -1) {
                         const key = membersKeys[memberDitemukan];
-                        if (confirm("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?")) {
-                            dbRef.child(key).update({ foto: "" });
-                            alert("SISTEM: Foto Member ID " + idTarget + " berhasil direset!");
-                        }
-                    } else { alert("PENGELOLA: Member dengan ID " + idTarget + " tidak ditemukan."); }
+                        tampilkanPesan("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?", "confirm", (hasil) => {
+                            if (hasil) {
+                                dbRef.child(key).update({ foto: "" });
+                                tampilkanPesan("Foto Member ID " + idTarget + " berhasil direset!");
+                            }
+                        });
+                    } else { tampilkanPesan("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
                 }
             }
         }
@@ -496,7 +545,7 @@
             members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='database_member_nafas.csv'; a.click();
+            const a = document.createElement('a'); a.href=url; a.download='data_member_nafas.csv'; a.click();
         }
     </script>
 </body>
