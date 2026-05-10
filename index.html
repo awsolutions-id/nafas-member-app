@@ -18,7 +18,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* CSS ASLI TIDAK DIRUBAH */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; min-height: 100%; background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden; }
         
@@ -58,7 +57,11 @@
         
         .member-card { background: rgba(30, 20, 60, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px; margin-bottom: 12px; text-align: left; overflow: hidden; position: relative; }
         .member-header { display: flex; align-items: center; gap: 20px; cursor: pointer; padding: 6px 10px 6px 15px; }
-        .member-header::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #00e5ff; font-size: 1.1rem; transition: 0.3s; }
+        .member-header::after { 
+            content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+            color: #00e5ff; font-size: 1.1rem; transition: 0.3s; 
+        }
         .member-card.active .member-header::after { transform: translateY(-50%) rotate(180deg); }
         .member-card.active .member-header { border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; padding-bottom: 8px; }
         .card-body-collapse { display: none; }
@@ -104,36 +107,37 @@
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; outline: none; font-size: 14px; }
         .btn-action { border: none; padding: 10px 15px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; font-family: 'Orbitron', sans-serif; }
 
-        /* --- REVISI: STYLE NOTIFIKASI KUSTOM NEON MERAH (TANPA LINK GITHUB) --- */
-        #customNotifOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100000; display: none; justify-content: center; align-items: center; }
-        .notif-box { width: 85%; max-width: 320px; background: #1a162e; border: 2px solid #ff0055; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 0 25px rgba(255, 0, 85, 0.6); animation: zoomIn 0.3s ease; }
-        .notif-header { font-family: 'Orbitron', sans-serif; color: #ff0055; font-size: 14px; margin-bottom: 15px; font-weight: 900; letter-spacing: 2px; border-bottom: 1px solid rgba(255,0,85,0.2); padding-bottom: 10px; }
-        .notif-msg { font-size: 14px; color: #fff; margin-bottom: 25px; line-height: 1.6; font-weight: 600; }
-        .notif-buttons { display: flex; justify-content: center; gap: 10px; }
-        .btn-notif-oke { background: #ff0055; border: none; border-radius: 12px; color: white; padding: 12px 25px; font-family: 'Orbitron'; font-size: 11px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4); width: 100%; }
-        .btn-notif-batal { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: #fff; padding: 12px 20px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; width: 100%; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        /* GAYA NOTIFIKASI NEON MERAH (REVISI) */
+        #neonNotifOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 100000; display: none; justify-content: center; align-items: center; }
+        .neon-notif-box { width: 85%; max-width: 320px; background: #0d0d0d; border: 2px solid #ff0000; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 0 15px #ff0000; }
+        .neon-notif-header { font-family: 'Orbitron', sans-serif; color: #ff0000; font-size: 14px; margin-bottom: 15px; font-weight: 900; letter-spacing: 2px; }
+        .neon-notif-msg { font-size: 14px; color: #fff; margin-bottom: 25px; line-height: 1.5; }
+        .neon-notif-btn-container { display: flex; flex-direction: column; gap: 10px; }
+        .btn-neon-oke { background: #ff0000; border: none; border-radius: 8px; color: white; padding: 12px; font-family: 'Orbitron'; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .btn-neon-batal { background: transparent; border: 1px solid #555; border-radius: 8px; color: #aaa; padding: 10px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; }
+        .btn-neon-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ff0000; background: #000; color: #fff; margin-bottom: 15px; outline: none; display: none; }
     </style>
 </head>
 <body>
-    <div id="customNotifOverlay">
-        <div class="notif-box">
-            <div class="notif-header">PENGELOLA</div>
-            <div id="notifMessage" class="notif-msg">Pesan Notifikasi</div>
-            <div class="notif-buttons" id="notifActionContainer">
-                <button id="btnNotifBatal" class="btn-notif-batal" style="display:none;">BATAL</button>
-                <button id="btnNotifOke" class="btn-notif-oke">OKE</button>
+
+    <div id="neonNotifOverlay">
+        <div class="neon-notif-box">
+            <div class="neon-notif-header" id="neonHeader">NOTIFIKASI ADMIN</div>
+            <div id="neonMessage" class="neon-notif-msg">Pesan...</div>
+            <input type="text" id="neonInput" class="btn-neon-input">
+            <div class="neon-notif-btn-container">
+                <button id="btnNeonOke" class="btn-neon-oke">OK</button>
+                <button id="btnNeonBatal" class="btn-neon-batal">BATAL</button>
             </div>
         </div>
     </div>
 
     <div id="loginScreen">
         <div class="login-box">
-            <h2>LOGIN PENGELOLA</h2>
-            <p>Masukkan Username & Password</p>
+            <h2>LOGIN ADMIN</h2> <p>Masukkan Username & Password</p>
             <input type="text" id="user" class="login-input" placeholder="Username">
             <input type="password" id="pass" class="login-input" placeholder="Password">
-            <button class="btn-login" onclick="cekLogin()">OTORISASI</button>
+            <button class="btn-login" onclick="cekLogin()">MASUK</button>
         </div>
     </div>
 
@@ -148,9 +152,9 @@
                 <div class="line"></div>
             </div>
             <div class="middle-group">
-                <button class="btn-masuk" onclick="showPage('pageMember')">DATABASE MEMBER</button>
+                <button class="btn-masuk" onclick="showPage('pageMember')">MEMBER</button>
                 <br>
-                <button class="btn-logout" onclick="logout()">LOGOUT SISTEM</button>
+                <button class="btn-logout" onclick="logout()">LOGOUT</button>
             </div>
             <div class="bottom-group">
                 <span class="feature-title">MENU LAYANAN GROUP</span>
@@ -264,30 +268,38 @@
         let members = [];
         let membersKeys = [];
 
-        /* --- REVISI: FUNGSI NOTIFIKASI KUSTOM TOTAL --- */
-        function tampilkanPesan(msg, type = "alert", callback = null) {
-            document.getElementById('notifMessage').innerText = msg;
-            const btnBatal = document.getElementById('btnNotifBatal');
-            const btnOke = document.getElementById('btnNotifOke');
+        // --- SISTEM NOTIFIKASI NEON (REVISI 2) ---
+        function customNotif(pesan, tipe = 'alert', callback = null) {
+            const overlay = document.getElementById('neonNotifOverlay');
+            const msg = document.getElementById('neonMessage');
+            const input = document.getElementById('neonInput');
+            const btnOke = document.getElementById('btnNeonOke');
+            const btnBatal = document.getElementById('btnNeonBatal');
             
-            if (type === "confirm") {
-                btnBatal.style.display = "block";
-                btnOke.innerText = "YA, LANJUTKAN";
-                btnBatal.onclick = () => { tutupNotif(); if(callback) callback(false); };
-                btnOke.onclick = () => { tutupNotif(); if(callback) callback(true); };
+            msg.innerText = pesan;
+            input.style.display = 'none';
+            btnBatal.style.display = 'none';
+            overlay.style.display = 'flex';
+
+            if(tipe === 'confirm') {
+                btnBatal.style.display = 'block';
+                btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(true); };
+                btnBatal.onclick = () => { overlay.style.display = 'none'; if(callback) callback(false); };
+            } else if(tipe === 'prompt') {
+                input.style.display = 'block';
+                input.value = "";
+                btnBatal.style.display = 'block';
+                btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(input.value); };
+                btnBatal.onclick = () => { overlay.style.display = 'none'; if(callback) callback(null); };
             } else {
-                btnBatal.style.display = "none";
-                btnOke.innerText = "SAYA MENGERTI";
-                btnOke.onclick = tutupNotif;
+                btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(); };
             }
-            document.getElementById('customNotifOverlay').style.display = 'flex';
         }
-        function tutupNotif() { document.getElementById('customNotifOverlay').style.display = 'none'; }
 
         configRef.child('akses_admin').on('value', (snap) => {
-            if (snap.val() === false) {
-                tampilkanPesan("SISTEM TERKUNCI: Pengelola Pusat menonaktifkan akses database.");
-                setTimeout(() => { location.reload(); }, 3000);
+            const isAktif = snap.val();
+            if (isAktif === false) {
+                customNotif("AKSES DITUTUP: Admin Pusat telah mengunci sistem.", 'alert', () => location.reload());
             }
         });
 
@@ -296,19 +308,19 @@
             const p = document.getElementById('pass').value;
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    tampilkanPesan("Gagal: Otorisasi ditutup oleh Pengelola Pusat.");
+                    customNotif("Gagal Masuk: Akses sistem sedang TERTUTUP.");
                     return;
                 }
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { tampilkanPesan('Identitas Salah! Akses ditolak.'); }
+                } else { customNotif('Username atau Password Salah!'); }
             });
         }
 
         function logout() {
-            tampilkanPesan("Apakah Anda ingin keluar dari Sistem Pengelola?", "confirm", (setuju) => {
-                if(setuju) {
+            customNotif("Keluar dari aplikasi?", 'confirm', (res) => {
+                if(res) {
                     document.getElementById('user').value = "";
                     document.getElementById('pass').value = "";
                     document.getElementById('loginScreen').style.display = 'flex';
@@ -346,7 +358,9 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => { logoRef.set(event.target.result); };
+                reader.onload = (event) => {
+                    logoRef.set(event.target.result);
+                };
                 reader.readAsDataURL(file);
             }
         };
@@ -356,7 +370,7 @@
             currentPopupKey = title.replace(/\s/g, "_");
             document.getElementById('popupTitleLabel').innerText = title;
             popupRef.child(currentPopupKey).once('value', (snap) => {
-                document.getElementById('popupText').value = snap.val() || "Data kosong.";
+                document.getElementById('popupText').value = snap.val() || "Belum ada data.";
             });
             document.getElementById('popupText').readOnly = true;
             document.getElementById('popupOverlay').style.display = 'flex';
@@ -366,11 +380,11 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            tampilkanPesan("Data Berhasil Diperbarui di Database Awan.");
+            customNotif("Berhasil disimpan ke Awan!");
         }
 
         function openFormTambah() {
-            document.getElementById("formTitle").innerText = "TAMBAH MEMBER BARU";
+            document.getElementById("formTitle").innerText = "TAMBAH MEMBER";
             document.getElementById("editIndex").value = "-1";
             document.getElementById("firebaseKey").value = "";
             clearForm();
@@ -379,7 +393,7 @@
 
         function openFormEdit(idx) {
             const m = members[idx];
-            document.getElementById("formTitle").innerText = "EDIT DATA MEMBER";
+            document.getElementById("formTitle").innerText = "EDIT MEMBER";
             document.getElementById("editIndex").value = idx;
             document.getElementById("firebaseKey").value = membersKeys[idx];
             document.getElementById("f_nama").value = m.nama;
@@ -430,7 +444,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            tampilkanPesan("Operasi Berhasil: Database Member NAFAS telah diperbarui!");
+            customNotif("Data Member Berhasil Disimpan!");
         }
 
         function renderMembers() {
@@ -450,23 +464,32 @@
                                 <div class="jabatan">${m.jabatan || 'Anggota'}</div>
                             </div>
                         </div>
+
                         <div class="card-body-collapse">
                             <div class="member-grid">
                                 <div class="field"><label>TTL</label><div>${m.ttl}</div></div>
                                 <div class="field"><label>Jenis Kelamin</label><div>${m.jk}</div></div>
                                 <div class="field full"><label>Alamat</label><div>${m.alamat}</div></div>
+                                <div class="field"><label>Kelurahan</label><div>${m.kel || "-"}</div></div>
                                 <div class="field"><label>Kecamatan</label><div>${m.kec}</div></div>
                                 <div class="field"><label>Kota</label><div>${m.kota}</div></div>
-                                <div class="field"><label>No HP</label><div>${m.hp}</div></div>
+                                <div class="field"><label>Provinsi</label><div>${m.prov}</div></div>
+                                <div class="field"><label>Negara</label><div>${m.negara || "Indonesia"}</div></div>
+                                <div class="field"><label>Kode Pos</label><div>${m.pos}</div></div>
                                 <div class="field"><label>Agama</label><div>${m.agama}</div></div>
+                                <div class="field"><label>No HP</label><div>${m.hp}</div></div>
+                                <div class="field"><label>Pekerjaan</label><div>${m.kerja}</div></div>
+                                <div class="field"><label>Hobby</label><div>${m.hobby}</div></div>
                             </div>
                             <div class="komitmen-box"><h5>KOMITMEN</h5><p>${m.komitmen}</p></div>
                             <div class="icon-actions">
-                                <div class="icon-btn" onclick="window.open('https://wa.me/62'+'${m.hp.substring(1)}')"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"><span>WA</span></div>
+                                <div class="icon-btn" onclick="window.open('https://www.google.com/maps/search/${m.alamat}')"><img src="https://cdn-icons-png.flaticon.com/512/684/684908.png"><span>MAPS</span></div>
                                 <div class="icon-btn" onclick="location.href='tel:${m.hp}'"><img src="https://cdn-icons-png.flaticon.com/512/724/724664.png"><span>TELP</span></div>
+                                <div class="icon-btn" onclick="location.href='sms:${m.hp}'"><img src="https://cdn-icons-png.flaticon.com/512/724/724715.png"><span>SMS</span></div>
+                                <div class="icon-btn" onclick="window.open('https://wa.me/62'+'${m.hp.substring(1)}')"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"><span>WA</span></div>
                             </div>
                             <div class="member-buttons">
-                                <button class="btn-wide" onclick="pilihFoto(${idx})">GANTI FOTO</button>
+                                <button class="btn-wide" onclick="pilihFoto(${idx})">PILIH / GANTI FOTO</button>
                                 <button class="btn-edit" onclick="openFormEdit(${idx})">EDIT</button>
                                 <button class="btn-hapus" onclick="hapusMember(${idx})">HAPUS</button>
                                 <button class="btn-kembali" onclick="showPage('pageBeranda')">KEMBALI</button>
@@ -491,35 +514,45 @@
 
         function hapusMember(idx) {
             const key = membersKeys[idx];
-            tampilkanPesan("Hapus data member ini selamanya dari database?", "confirm", (ya) => {
-                if(ya) dbRef.child(key).remove();
+            customNotif("Hapus data member ini dari Awan selamanya?", 'confirm', (res) => {
+                if(res) { dbRef.child(key).remove(); }
             });
         }
 
         function resetFoto() {
-            tampilkanPesan("Pilih metode reset melalui Menu Utama Pengelola.");
-            const p = prompt("METODE RESET:\n1. Semua Member\n2. Sesuai ID\nKetik 1 atau 2:");
-            if (p === "1") {
-                tampilkanPesan("Hapus seluruh foto di database?", "confirm", (ya) => {
-                    if(ya) { membersKeys.forEach(k => dbRef.child(k).update({ foto: "" })); tampilkanPesan("Selesai."); }
-                });
-            } else if (p === "2") {
-                const id = prompt("Masukkan ID:");
-                const mIdx = members.findIndex(m => m.id == id);
-                if (mIdx !== -1) {
-                    tampilkanPesan("Hapus foto ID " + id + "?", "confirm", (ya) => {
-                        if(ya) { dbRef.child(membersKeys[mIdx]).update({ foto: "" }); tampilkanPesan("Terhapus."); }
+            customNotif("PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:", 'prompt', (pilihan) => {
+                if (pilihan === "1") {
+                    customNotif("PERINGATAN: Hapus SEMUA foto member di database?", 'confirm', (res) => {
+                        if(res) {
+                            membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
+                            customNotif("Semua foto berhasil dihapus!");
+                        }
                     });
-                } else { tampilkanPesan("ID Tidak Ada."); }
-            }
+                } else if (pilihan === "2") {
+                    customNotif("Masukkan Nomor ID Member yang fotonya ingin dihapus:", 'prompt', (idTarget) => {
+                        if (idTarget) {
+                            const memberDitemukan = members.findIndex(m => m.id == idTarget);
+                            if (memberDitemukan !== -1) {
+                                const key = membersKeys[memberDitemukan];
+                                customNotif("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?", 'confirm', (res) => {
+                                    if(res) {
+                                        dbRef.child(key).update({ foto: "" });
+                                        customNotif("Foto Member ID " + idTarget + " berhasil direset!");
+                                    }
+                                });
+                            } else { customNotif("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
+                        }
+                    });
+                }
+            });
         }
 
         function exportCSV() {
-            let csv = "ID,Nama,Jabatan,HP,TTL,Alamat\n";
-            members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat}\n`);
+            let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
+            members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='database_nafas.csv'; a.click();
+            const a = document.createElement('a'); a.href=url; a.download='data_member_nafas.csv'; a.click();
         }
     </script>
 </body>
