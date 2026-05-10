@@ -111,11 +111,11 @@
 <body>
     <div id="loginScreen">
         <div class="login-box">
-            <h2>LOGIN ADMIN</h2>
+            <h2>LOGIN PENGELOLA</h2>
             <p>Masukkan Username & Password</p>
             <input type="text" id="user" class="login-input" placeholder="Username">
             <input type="password" id="pass" class="login-input" placeholder="Password">
-            <button class="btn-login" onclick="cekLogin()">MASUK</button>
+            <button class="btn-login" onclick="cekLogin()">OTORISASI</button>
         </div>
     </div>
 
@@ -130,9 +130,9 @@
                 <div class="line"></div>
             </div>
             <div class="middle-group">
-                <button class="btn-masuk" onclick="showPage('pageMember')">MEMBER</button>
+                <button class="btn-masuk" onclick="showPage('pageMember')">DATABASE MEMBER</button>
                 <br>
-                <button class="btn-logout" onclick="logout()">LOGOUT</button>
+                <button class="btn-logout" onclick="logout()">LOGOUT SISTEM</button>
             </div>
             <div class="bottom-group">
                 <span class="feature-title">MENU LAYANAN GROUP</span>
@@ -250,8 +250,8 @@
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                alert("AKSES DITUTUP: Admin Pusat telah mengunci sistem.");
-                location.reload(); // Memaksa kembali ke layar login
+                alert("AKSES DITUTUP: Pengelola Pusat telah mengunci sistem.");
+                location.reload(); 
             }
         });
 
@@ -259,22 +259,21 @@
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
             
-            // Validasi tambahan: Cek apakah akses sedang dibuka sebelum izinkan login
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    alert("Gagal Masuk: Akses sistem sedang TERTUTUP.");
+                    alert("OTORISASI GAGAL: Akses Database Member NAFAS sedang TERTUTUP.");
                     return;
                 }
                 
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { alert('Username atau Password Salah!'); }
+                } else { alert('PENGELOLA: Username atau Password Salah!'); }
             });
         }
 
         function logout() {
-            if(confirm("Keluar dari aplikasi?")) {
+            if(confirm("PENGELOLA: Keluar dari aplikasi?")) {
                 document.getElementById('user').value = "";
                 document.getElementById('pass').value = "";
                 document.getElementById('loginScreen').style.display = 'flex';
@@ -333,11 +332,11 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            alert("Berhasil disimpan ke Awan!");
+            alert("DATA TERENKRIPSI: Berhasil disimpan ke Awan NAFAS!");
         }
 
         function openFormTambah() {
-            document.getElementById("formTitle").innerText = "TAMBAH MEMBER";
+            document.getElementById("formTitle").innerText = "TAMBAH MEMBER NAFAS";
             document.getElementById("editIndex").value = "-1";
             document.getElementById("firebaseKey").value = "";
             clearForm();
@@ -346,7 +345,7 @@
 
         function openFormEdit(idx) {
             const m = members[idx];
-            document.getElementById("formTitle").innerText = "EDIT MEMBER";
+            document.getElementById("formTitle").innerText = "EDIT MEMBER NAFAS";
             document.getElementById("editIndex").value = idx;
             document.getElementById("firebaseKey").value = membersKeys[idx];
             document.getElementById("f_nama").value = m.nama;
@@ -397,7 +396,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            alert("Data Member Berhasil Disimpan!");
+            alert("DATA TERENKRIPSI: Database Member NAFAS Berhasil Diperbarui!");
         }
 
         function renderMembers() {
@@ -434,7 +433,7 @@
                                 <div class="field"><label>Pekerjaan</label><div>${m.kerja}</div></div>
                                 <div class="field"><label>Hobby</label><div>${m.hobby}</div></div>
                             </div>
-                            <div class="komitmen-box"><h5>KOMITMEN</h5><p>${m.komitmen}</p></div>
+                            <div class="komitmen-box"><h5>KOMITMEN MEMBER</h5><p>${m.komitmen}</p></div>
                             <div class="icon-actions">
                                 <div class="icon-btn" onclick="window.open('https://www.google.com/maps/search/${m.alamat}')"><img src="https://cdn-icons-png.flaticon.com/512/684/684908.png"><span>MAPS</span></div>
                                 <div class="icon-btn" onclick="location.href='tel:${m.hp}'"><img src="https://cdn-icons-png.flaticon.com/512/724/724664.png"><span>TELP</span></div>
@@ -467,15 +466,15 @@
 
         function hapusMember(idx) {
             const key = membersKeys[idx];
-            if(confirm("Hapus data member ini dari Awan selamanya?")) { dbRef.child(key).remove(); }
+            if(confirm("PENGELOLA: Hapus permanen data member ini dari Database NAFAS?")) { dbRef.child(key).remove(); }
         }
 
         function resetFoto() {
-            const pilihan = prompt("PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:");
+            const pilihan = prompt("PENGELOLA: PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:");
             if (pilihan === "1") {
-                if (confirm("PERINGATAN: Hapus SEMUA foto member di database?")) {
+                if (confirm("PERINGATAN PENGELOLA: Hapus SEMUA foto member di database?")) {
                     membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
-                    alert("Semua foto berhasil dihapus!");
+                    alert("SISTEM: Seluruh foto berhasil direset!");
                 }
             } else if (pilihan === "2") {
                 const idTarget = prompt("Masukkan Nomor ID Member yang fotonya ingin dihapus:");
@@ -485,9 +484,9 @@
                         const key = membersKeys[memberDitemukan];
                         if (confirm("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?")) {
                             dbRef.child(key).update({ foto: "" });
-                            alert("Foto Member ID " + idTarget + " berhasil direset!");
+                            alert("SISTEM: Foto Member ID " + idTarget + " berhasil direset!");
                         }
-                    } else { alert("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
+                    } else { alert("PENGELOLA: Member dengan ID " + idTarget + " tidak ditemukan."); }
                 }
             }
         }
@@ -497,7 +496,7 @@
             members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='data_member_nafas.csv'; a.click();
+            const a = document.createElement('a'); a.href=url; a.download='database_member_nafas.csv'; a.click();
         }
     </script>
 </body>
