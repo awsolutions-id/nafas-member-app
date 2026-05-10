@@ -6,56 +6,117 @@
     <title>KONTROL AKSES NAFAS</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
+        /* Dasar & Tema Gelap */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        body { 
+            background: #0a061a; 
+            font-family: 'Montserrat', sans-serif; 
+            color: white; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Kotak Login & Panel */
+        .container-box { 
+            width: 90%; 
+            max-width: 350px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            padding: 30px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; letter-spacing: 1px; }
         
-        /* Desain Login & Panel */
-        .login-box { width: 90%; max-width: 350px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; text-align: center; position: relative; z-index: 1; }
-        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; }
-        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333; background: #000; color: white; outline: none; text-align: center; }
-        .btn-login { width: 100%; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; cursor: pointer; }
-        
+        .input-style { 
+            width: 100%; padding: 12px; margin-bottom: 15px; 
+            border-radius: 10px; border: 1px solid #333; 
+            background: #000; color: white; outline: none; text-align: center; 
+        }
+
+        .btn-main { 
+            width: 100%; padding: 14px; border: none; border-radius: 10px; 
+            background: linear-gradient(90deg, #8e2de2, #f00073); 
+            color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
+        }
+
+        /* Halaman */
         .page { display: none; }
         .page.active { display: block; }
-        .btn-control { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
-        .status-box { padding: 15px; margin-bottom: 20px; border-radius: 10px; background: rgba(0,0,0,0.3); font-weight: bold; }
 
-        /* MODAL CUSTOM (Pengganti Alert agar tulisan awsolutions hilang) */
-        #customAlert { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; }
-        .alert-content { background: #1a152e; border: 2px solid #00e5ff; padding: 25px; border-radius: 15px; width: 85%; max-width: 300px; text-align: center; box-shadow: 0 0 20px rgba(0, 229, 255, 0.2); }
-        .alert-message { margin-bottom: 20px; line-height: 1.5; font-weight: 600; }
-        .btn-ok { background: #00e5ff; color: #000; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
+        .btn-control { 
+            width: 100%; padding: 15px; margin: 10px 0; 
+            border: none; border-radius: 10px; color: white; 
+            font-weight: bold; cursor: pointer; font-family: 'Orbitron'; 
+        }
+
+        .status-display { 
+            padding: 15px; margin-bottom: 20px; border-radius: 10px; 
+            background: rgba(0,0,0,0.4); font-weight: bold; font-family: 'Orbitron'; font-size: 14px;
+        }
+
+        /* --- MODAL NOTIFIKASI CUSTOM (SOLUSI PENGHAPUS TULISAN GITHUB) --- */
+        #notifOverlay { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.9); z-index: 9999; 
+            justify-content: center; align-items: center; 
+        }
+        .notif-card { 
+            background: #1a152e; border: 2px solid #f00073; 
+            padding: 25px; border-radius: 20px; width: 80%; 
+            max-width: 300px; text-align: center; 
+            animation: popUp 0.3s ease-out;
+        }
+        @keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; }
+        .btn-close { 
+            background: #f00073; color: white; border: none; 
+            padding: 8px 25px; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; font-family: 'Orbitron'; font-size: 12px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="customAlert">
-        <div class="alert-content">
-            <div id="alertMsg" class="alert-message">Pesan disini</div>
-            <button class="btn-ok" onclick="closeAlert()">OKE</button>
+    <div id="notifOverlay">
+        <div class="notif-card">
+            <div id="notifMsg" class="notif-text">Pesan di sini</div>
+            <button class="btn-close" onclick="tutupNotif()">SAYA MENGERTI</button>
         </div>
     </div>
 
-    <div id="loginScreen" class="login-box">
+    <div id="loginPage" class="container-box page active">
         <h2>LOGIN PENGELOLA</h2>
-        <input type="text" id="user" class="login-input" placeholder="Username" autocapitalize="none">
-        <input type="password" id="pass" class="login-input" placeholder="Password">
-        <button class="btn-login" onclick="cekLogin()">MASUK</button>
+        <input type="text" id="userInput" class="input-style" placeholder="Username" autocapitalize="none">
+        <input type="password" id="passInput" class="input-style" placeholder="Password">
+        <button class="btn-main" onclick="prosesLogin()">MASUK</button>
     </div>
 
-    <div id="pageControl" class="page login-box">
+    <div id="adminPanel" class="container-box page">
         <h2>PANEL KONTROL</h2>
-        <div id="statusLabel" class="status-box">Memuat...</div>
-        <button class="btn-control" style="background:#27ae60" onclick="setAkses(true)">BUKA AKSES</button>
-        <button class="btn-control" style="background:#c0392b" onclick="setAkses(false)">TUTUP AKSES</button>
-        <br><br>
-        <button style="background:none; border:none; color:#666;" onclick="location.reload()">LOGOUT</button>
+        <div id="statusLabel" class="status-display">MENGECEK STATUS...</div>
+        <button class="btn-control" style="background:#27ae60" onclick="updateAkses(true)">BUKA AKSES</button>
+        <button class="btn-control" style="background:#c0392b" onclick="updateAkses(false)">TUTUP AKSES</button>
+        <div style="margin-top: 20px;">
+            <button style="background:none; border:none; color:#666; cursor:pointer;" onclick="location.reload()">KELUAR (LOGOUT)</button>
+        </div>
     </div>
 
     <script>
+        // Konfigurasi Firebase Bapak
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -67,51 +128,55 @@
         };
         
         firebase.initializeApp(firebaseConfig);
-        const configRef = firebase.database().ref('app_config');
+        const dbConfig = firebase.database().ref('app_config');
 
-        const USERS = [
+        // Data Akun Ringkas
+        const DATA_AKUN = [
             { u: "ketua1", p: "123" },
             { u: "admin1", p: "123" }
         ];
 
-        // Fungsi pengganti Alert standar
-        function tampilPesan(msg) {
-            document.getElementById('alertMsg').innerText = msg;
-            document.getElementById('customAlert').style.display = 'flex';
+        // --- FUNGSI NOTIFIKASI KHUSUS ---
+        function kirimNotif(teks) {
+            document.getElementById('notifMsg').innerText = teks;
+            document.getElementById('notifOverlay').style.display = 'flex';
         }
 
-        function closeAlert() {
-            document.getElementById('customAlert').style.display = 'none';
+        function tutupNotif() {
+            document.getElementById('notifOverlay').style.display = 'none';
         }
 
-        function cekLogin() {
-            const userVal = document.getElementById('user').value.toLowerCase().trim();
-            const passVal = document.getElementById('pass').value.trim();
-            const found = USERS.find(account => account.u === userVal && account.p === passVal);
+        // --- LOGIKA APLIKASI ---
+        function prosesLogin() {
+            const u = document.getElementById('userInput').value.toLowerCase().trim();
+            const p = document.getElementById('passInput').value.trim();
             
-            if(found) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('pageControl').classList.add('active');
-                pantauStatus();
+            const cek = DATA_AKUN.find(acc => acc.u === u && acc.p === p);
+            
+            if(cek) {
+                document.getElementById('loginPage').classList.remove('active');
+                document.getElementById('adminPanel').classList.add('active');
+                hubungkanStatus();
             } else {
-                tampilPesan("Gagal masuk, silakan cek kembali.");
+                kirimNotif("Maaf Pak, Username atau Password salah ketik.");
             }
         }
 
-        function setAkses(status) {
-            configRef.child('akses_admin').set(status);
-            tampilPesan(status ? "Akses telah DIBUKA" : "Akses telah DITUTUP");
+        function updateAkses(bol) {
+            dbConfig.child('akses_admin').set(bol);
+            const info = bol ? "AKSES DIBUKA!\nSekarang Member bisa login." : "AKSES DITUTUP!\nAplikasi telah dikunci kembali.";
+            kirimNotif(info);
         }
 
-        function pantauStatus() {
-            configRef.child('akses_admin').on('value', (snap) => {
-                const label = document.getElementById('statusLabel');
+        function hubungkanStatus() {
+            dbConfig.child('akses_admin').on('value', (snap) => {
+                const el = document.getElementById('statusLabel');
                 if(snap.val() === true) {
-                    label.innerText = "STATUS: TERBUKA";
-                    label.style.color = "#2ecc71";
+                    el.innerText = "STATUS: TERBUKA";
+                    el.style.color = "#2ecc71";
                 } else {
-                    label.innerText = "STATUS: TERTUTUP";
-                    label.style.color = "#e74c3c";
+                    el.innerText = "STATUS: TERTUTUP";
+                    el.style.color = "#e74c3c";
                 }
             });
         }
