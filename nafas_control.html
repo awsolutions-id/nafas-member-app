@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        /* Dasar & Tema Gelap */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: #0a061a; 
@@ -23,6 +24,7 @@
             overflow: hidden; 
         }
 
+        /* Kotak Login & Panel */
         .container-box { 
             width: 90%; 
             max-width: 350px; 
@@ -48,6 +50,7 @@
             color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
         }
 
+        /* Halaman */
         .page { display: none; }
         .page.active { display: block; }
 
@@ -62,18 +65,19 @@
             background: rgba(0,0,0,0.4); font-weight: bold; font-family: 'Orbitron'; font-size: 14px;
         }
 
-        /* --- MODAL NOTIFIKASI BIRU CYAN NEON --- */
+        /* --- MODAL NOTIFIKASI SESUAI SCREENSHOT --- */
         #notifOverlay { 
             display: none; position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.9); z-index: 9999; 
+            background: rgba(0,0,0,0.85); z-index: 9999; 
             justify-content: center; align-items: center; 
+            backdrop-filter: blur(5px);
         }
         .notif-card { 
-            background: #0d0d0d; 
-            border: 2px solid #00e5ff; 
-            padding: 25px; border-radius: 20px; width: 80%; 
+            background: #0a061a; 
+            border: 2px solid #00f2fe; /* Garis Neon Biru-Cyan */
+            padding: 25px; border-radius: 20px; width: 85%; 
             max-width: 300px; text-align: center; 
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
             animation: popUp 0.3s ease-out;
         }
         @keyframes popUp {
@@ -82,18 +86,22 @@
         }
         .notif-header {
             font-family: 'Orbitron', sans-serif;
-            color: #00e5ff;
-            font-size: 12px;
+            color: #00f2fe;
+            font-size: 13px;
             margin-bottom: 15px;
             letter-spacing: 2px;
             font-weight: bold;
         }
         .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; font-weight: 500; }
+        
+        /* Tombol OK dengan Gradasi Magenta-Purple */
         .btn-close { 
-            background: linear-gradient(90deg, #8e2de2, #f00073); 
+            width: 100%;
+            background: linear-gradient(45deg, #ff00cc, #3333ff); 
             color: white; border: none; 
-            padding: 10px 25px; border-radius: 8px; font-weight: bold; 
-            cursor: pointer; font-family: 'Orbitron'; font-size: 11px;
+            padding: 12px 25px; border-radius: 10px; font-weight: bold; 
+            cursor: pointer; font-family: 'Orbitron'; font-size: 14px;
+            box-shadow: 0 4px 10px rgba(255, 0, 204, 0.3);
         }
     </style>
 </head>
@@ -103,7 +111,7 @@
         <div class="notif-card">
             <div class="notif-header">NOTIFIKASI ADMIN</div>
             <div id="notifMsg" class="notif-text">Pesan di sini</div>
-            <button class="btn-close" onclick="tutupNotif()">SAYA MENGERTI</button>
+            <button class="btn-close" onclick="tutupNotif()">OK</button>
         </div>
     </div>
 
