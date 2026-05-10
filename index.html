@@ -106,9 +106,24 @@
         .form-group label { display: block; font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; outline: none; font-size: 14px; }
         .btn-action { border: none; padding: 10px 15px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; font-family: 'Orbitron', sans-serif; }
+
+        /* MODAL KHUSUS PENGHAPUS TULISAN GITHUB (REVISI) */
+        #notifBox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100000; justify-content: center; align-items: center; }
+        .notif-card { background: #161225; border: 2px solid #f00073; padding: 25px; border-radius: 20px; width: 85%; max-width: 300px; text-align: center; box-shadow: 0 0 30px rgba(240, 0, 115, 0.3); animation: popScale 0.3s ease; }
+        @keyframes popScale { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .notif-text { font-size: 14px; line-height: 1.6; color: #fff; margin-bottom: 20px; font-weight: 600; }
+        .notif-btn { background: #f00073; color: white; border: none; padding: 10px 30px; border-radius: 10px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <div id="notifBox">
+        <div class="notif-card">
+            <div id="notifMsg" class="notif-text">Pesan di sini</div>
+            <button class="notif-btn" onclick="tutupNotif()">OKE</button>
+        </div>
+    </div>
+
     <div id="loginScreen">
         <div class="login-box">
             <h2>LOGIN ADMIN</h2>
@@ -246,12 +261,21 @@
         let members = [];
         let membersKeys = [];
 
+        // FUNGSI NOTIFIKASI KHUSUS (PENGGANTI ALERT)
+        function kirimNotif(pesan) {
+            document.getElementById('notifMsg').innerText = pesan;
+            document.getElementById('notifBox').style.display = 'flex';
+        }
+        function tutupNotif() {
+            document.getElementById('notifBox').style.display = 'none';
+        }
+
         // --- SISTEM PENCEGAT OTOMATIS (KEAMANAN) ---
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                alert("AKSES DITUTUP: Admin Pusat telah mengunci sistem.");
-                location.reload(); // Memaksa kembali ke layar login
+                kirimNotif("AKSES DITUTUP: Admin Pusat telah mengunci sistem.");
+                setTimeout(() => { location.reload(); }, 2500); 
             }
         });
 
@@ -259,17 +283,16 @@
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
             
-            // Validasi tambahan: Cek apakah akses sedang dibuka sebelum izinkan login
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    alert("Gagal Masuk: Akses sistem sedang TERTUTUP.");
+                    kirimNotif("Gagal Masuk: Akses sistem sedang TERTUTUP.");
                     return;
                 }
                 
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { alert('Username atau Password Salah!'); }
+                } else { kirimNotif('Username atau Password Salah!'); }
             });
         }
 
@@ -333,7 +356,7 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            alert("Berhasil disimpan ke Awan!");
+            kirimNotif("Berhasil disimpan ke Awan!");
         }
 
         function openFormTambah() {
@@ -397,7 +420,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            alert("Data Member Berhasil Disimpan!");
+            kirimNotif("Data Member Berhasil Disimpan!");
         }
 
         function renderMembers() {
@@ -475,7 +498,7 @@
             if (pilihan === "1") {
                 if (confirm("PERINGATAN: Hapus SEMUA foto member di database?")) {
                     membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
-                    alert("Semua foto berhasil dihapus!");
+                    kirimNotif("Semua foto berhasil dihapus!");
                 }
             } else if (pilihan === "2") {
                 const idTarget = prompt("Masukkan Nomor ID Member yang fotonya ingin dihapus:");
@@ -485,9 +508,9 @@
                         const key = membersKeys[memberDitemukan];
                         if (confirm("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?")) {
                             dbRef.child(key).update({ foto: "" });
-                            alert("Foto Member ID " + idTarget + " berhasil direset!");
+                            kirimNotif("Foto Member ID " + idTarget + " berhasil direset!");
                         }
-                    } else { alert("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
+                    } else { kirimNotif("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
                 }
             }
         }
