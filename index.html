@@ -277,7 +277,6 @@
         
         let members = [];
         let membersKeys = [];
-        // State untuk melacak member mana yang sudah di-unlock
         let unlockedStatus = {};
 
         window.addEventListener('load', () => {
@@ -427,23 +426,34 @@
             closeForm(); customNotif("Data Berhasil Disimpan!");
         }
 
-        // FUNGSI UNLOCK DATA VIA GEMBOK
-        function requestUnlock(e, memberId) {
+        // FUNGSI TOGGLE UNLOCK/LOCK
+        function requestToggleLock(e, memberId) {
             e.stopPropagation();
-            customNotif("DATA TERKUNCI: Aktifkan akses untuk melihat detail member ini?", 'confirm', (res) => {
-                if(res) {
-                    unlockedStatus[memberId] = true;
-                    renderMembers(); // Refresh untuk update warna gembok & fungsi klik
-                    customNotif("AKSES DIBUKA: Silahkan klik kartu atau panah untuk melihat data.");
-                }
-            });
+            if(!unlockedStatus[memberId]) {
+                // Jika sedang terkunci -> Buka
+                customNotif("DATA TERKUNCI: Aktifkan akses data member ini?", 'confirm', (res) => {
+                    if(res) {
+                        unlockedStatus[memberId] = true;
+                        renderMembers();
+                        customNotif("AKSES DIBUKA: Silahkan klik kartu/panah.");
+                    }
+                });
+            } else {
+                // Jika sedang terbuka -> Kunci Kembali
+                customNotif("Kunci kembali akses data member ini?", 'confirm', (res) => {
+                    if(res) {
+                        unlockedStatus[memberId] = false;
+                        renderMembers();
+                        customNotif("AKSES DITUTUP.");
+                    }
+                });
+            }
         }
 
         function toggleCard(element, memberId) {
             if(unlockedStatus[memberId]) {
                 element.parentElement.classList.toggle('active');
             } else {
-                // Beri efek goyang atau peringatan jika klik tanpa gembok
                 customNotif("Peringatan: Klik Icon Gembok terlebih dahulu untuk membuka kunci data.");
             }
         }
@@ -469,7 +479,7 @@
                                 <div class="jabatan">${m.jabatan || 'Anggota'}</div>
                             </div>
                             <div class="header-controls">
-                                <div class="gembok-btn ${isUnlocked}" onclick="requestUnlock(event, '${m.id}')">
+                                <div class="gembok-btn ${isUnlocked}" onclick="requestToggleLock(event, '${m.id}')">
                                     <i class="fas ${unlockedStatus[m.id] ? 'fa-lock-open' : 'fa-lock'}"></i>
                                 </div>
                                 <div class="arrow-btn"><i class="fas fa-chevron-down"></i></div>
