@@ -300,7 +300,8 @@
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                customNotif("AKSES DITUTUP: Admin Pusat telah mengunci sistem.", 'alert', () => location.reload());
+                // Perubahan: Admin Pusat diganti menjadi Pengelola
+                customNotif("AKSES DITUTUP: Pengelola telah mengunci sistem.", 'alert', () => location.reload());
             }
         });
 
