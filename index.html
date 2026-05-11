@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAFAS INDONESIA</title>
     
-    <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta name="googlebot" content="noindex">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
     
     <link rel="icon" type="image/png" href="logo_nafas.png">
     <link rel="apple-touch-icon" href="logo_nafas.png">
@@ -21,7 +21,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* CSS ASLI TETAP DI PERTAHANKAN */
+        /* CSS TETAP SEPERTI ASLI */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; min-height: 100%; background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden; }
         
@@ -125,7 +125,7 @@
 
     <div id="neonNotifOverlay">
         <div class="neon-notif-box">
-            <div class="neon-notif-header" id="neonHeader">NOTIFIKASI SISTEM</div>
+            <div class="neon-notif-header" id="neonHeader">NOTIFIKASI PENGELOLA</div>
             <div id="neonMessage" class="neon-notif-msg">Pesan...</div>
             <input type="text" id="neonInput" class="btn-neon-input">
             <div class="neon-notif-btn-container">
@@ -137,9 +137,9 @@
 
     <div id="loginScreen">
         <div class="login-box">
-            <h2>LOGIN ADMIN</h2>
-            <p>Masukkan Username & Password</p>
-            <input type="text" id="user" class="login-input" placeholder="Username">
+            <h2>DATABASE LOGIN</h2>
+            <p>Khusus User Terdaftar</p>
+            <input type="text" id="user" class="login-input" placeholder="Email User">
             <input type="password" id="pass" class="login-input" placeholder="Password">
             <button class="btn-login" onclick="cekLogin()">MASUK</button>
         </div>
@@ -249,7 +249,7 @@
     <input type="file" id="logoInput" hidden accept="image/*">
 
     <script>
-        // KEAMANAN: Mematikan F12, Ctrl+Shift+I, Ctrl+U (Inspect Element)
+        // KEAMANAN TINGGI: Cegah Inspeksi Kode
         document.onkeydown = function(e) {
             if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
                 return false;
@@ -285,12 +285,10 @@
             const input = document.getElementById('neonInput');
             const btnOke = document.getElementById('btnNeonOke');
             const btnBatal = document.getElementById('btnNeonBatal');
-            
             msg.innerText = pesan;
             input.style.display = 'none';
             btnBatal.style.display = 'none';
             overlay.style.display = 'flex';
-
             if(tipe === 'confirm') {
                 btnBatal.style.display = 'block';
                 btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(true); };
@@ -306,31 +304,34 @@
             }
         }
 
-        // KEAMANAN: Auto-Logout jika akses dikunci Admin Pusat
+        // KEAMANAN TERPUSAT: Auto-Logout jika Pengelola mengunci sistem
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                customNotif("AKSES DITUTUP: Sistem telah dikunci oleh Admin Pusat.", 'alert', () => location.reload());
+                customNotif("AKSES DITUTUP: Sistem sedang dikunci oleh Pengelola.", 'alert', () => location.reload());
             }
         });
 
         function cekLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
+            // Cek ke Pengelola sebelum mengizinkan login
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    customNotif("Sistem sedang dikunci.");
+                    customNotif("Akses Ditolak: Sistem sedang dalam penguncian Pengelola.");
                     return;
                 }
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { customNotif('Akses Ditolak!'); }
+                } else { 
+                    customNotif('Identitas User Tidak Dikenali!'); 
+                }
             });
         }
 
         function logout() {
-            customNotif("Keluar dari aplikasi?", 'confirm', (res) => {
+            customNotif("Keluar sistem?", 'confirm', (res) => {
                 if(res) {
                     document.getElementById('user').value = "";
                     document.getElementById('pass').value = "";
@@ -391,7 +392,7 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            customNotif("Tersimpan!");
+            customNotif("Berhasil Update!");
         }
 
         function openFormTambah() {
@@ -455,7 +456,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            customNotif("Data Disimpan!");
+            customNotif("Database Terupdate!");
         }
 
         function renderMembers() {
@@ -475,7 +476,6 @@
                                 <div class="jabatan">${m.jabatan || 'Anggota'}</div>
                             </div>
                         </div>
-
                         <div class="card-body-collapse">
                             <div class="member-grid">
                                 <div class="field"><label>TTL</label><div>${m.ttl}</div></div>
@@ -533,21 +533,21 @@
         function resetFoto() {
             customNotif("1. Hapus SEMUA\n2. Hapus Per-ID\n\nKetik 1/2:", 'prompt', (pilihan) => {
                 if (pilihan === "1") {
-                    customNotif("Hapus semua foto?", 'confirm', (res) => {
+                    customNotif("Hapus semua foto database?", 'confirm', (res) => {
                         if(res) {
                             membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
-                            customNotif("Terhapus!");
+                            customNotif("Selesai!");
                         }
                     });
                 } else if (pilihan === "2") {
-                    customNotif("Masukkan ID Member:", 'prompt', (idTarget) => {
+                    customNotif("Masukkan ID Target:", 'prompt', (idTarget) => {
                         if (idTarget) {
                             const memberDitemukan = members.findIndex(m => m.id == idTarget);
                             if (memberDitemukan !== -1) {
                                 const key = membersKeys[memberDitemukan];
                                 dbRef.child(key).update({ foto: "" });
-                                customNotif("Foto ID " + idTarget + " Terhapus!");
-                            } else { customNotif("ID tidak ada!"); }
+                                customNotif("Foto ID " + idTarget + " Direset!");
+                            } else { customNotif("Data Tidak Ada!"); }
                         }
                     });
                 }
