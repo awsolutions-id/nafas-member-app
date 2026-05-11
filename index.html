@@ -68,14 +68,11 @@
         .top-buttons button { border: none; border-radius: 10px; padding: 10px 0; font-weight: 800; color: #fff; font-size: 10px; font-family: 'Orbitron', sans-serif; }
         
         .member-card { background: rgba(30, 20, 60, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px; margin-bottom: 12px; text-align: left; overflow: hidden; position: relative; }
-        
-        /* PERBAIKAN TOTAL HEADER */
         .member-header { display: flex; align-items: center; gap: 15px; cursor: pointer; padding: 8px 45px 8px 10px; position: relative; }
         
-        /* AREA KHUSUS ICON DI KANAN */
         .header-controls { position: absolute; right: 12px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; width: 30px; }
-        
-        .gembok-btn { color: #00e5ff; font-size: 11px; opacity: 0.9; cursor: pointer; }
+        .gembok-btn { color: #00e5ff; font-size: 11px; opacity: 0.9; cursor: pointer; transition: 0.3s; }
+        .gembok-btn.unlocked { color: #00ff88; transform: scale(1.2); }
         .arrow-btn { color: #00e5ff; font-size: 1.2rem; transition: 0.3s; }
         .member-card.active .arrow-btn { transform: rotate(180deg); }
 
@@ -280,6 +277,8 @@
         
         let members = [];
         let membersKeys = [];
+        // State untuk melacak member mana yang sudah di-unlock
+        let unlockedStatus = {};
 
         window.addEventListener('load', () => {
             if (sessionStorage.getItem("isLoggedIn") === "true") {
@@ -428,10 +427,25 @@
             closeForm(); customNotif("Data Berhasil Disimpan!");
         }
 
-        // FUNGSI GEMBOK
-        function alertGembok(e) {
+        // FUNGSI UNLOCK DATA VIA GEMBOK
+        function requestUnlock(e, memberId) {
             e.stopPropagation();
-            customNotif("DATA TERKUNCI: Informasi member ini dilindungi oleh Sistem Keamanan NAFAS INDONESIA.");
+            customNotif("DATA TERKUNCI: Aktifkan akses untuk melihat detail member ini?", 'confirm', (res) => {
+                if(res) {
+                    unlockedStatus[memberId] = true;
+                    renderMembers(); // Refresh untuk update warna gembok & fungsi klik
+                    customNotif("AKSES DIBUKA: Silahkan klik kartu atau panah untuk melihat data.");
+                }
+            });
+        }
+
+        function toggleCard(element, memberId) {
+            if(unlockedStatus[memberId]) {
+                element.parentElement.classList.toggle('active');
+            } else {
+                // Beri efek goyang atau peringatan jika klik tanpa gembok
+                customNotif("Peringatan: Klik Icon Gembok terlebih dahulu untuk membuka kunci data.");
+            }
         }
 
         function renderMembers() {
@@ -442,8 +456,10 @@
                 if(m.nama.toLowerCase().includes(q) || m.id.includes(q)) {
                     const card = document.createElement("div");
                     card.className = "member-card";
+                    const isUnlocked = unlockedStatus[m.id] ? "unlocked" : "";
+                    
                     card.innerHTML = `
-                        <div class="member-header" onclick="this.parentElement.classList.toggle('active')">
+                        <div class="member-header" onclick="toggleCard(this, '${m.id}')">
                             <div class="photo-ring">
                                 <img src="${m.foto || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}">
                             </div>
@@ -453,7 +469,9 @@
                                 <div class="jabatan">${m.jabatan || 'Anggota'}</div>
                             </div>
                             <div class="header-controls">
-                                <div class="gembok-btn" onclick="alertGembok(event)"><i class="fas fa-lock"></i></div>
+                                <div class="gembok-btn ${isUnlocked}" onclick="requestUnlock(event, '${m.id}')">
+                                    <i class="fas ${unlockedStatus[m.id] ? 'fa-lock-open' : 'fa-lock'}"></i>
+                                </div>
                                 <div class="arrow-btn"><i class="fas fa-chevron-down"></i></div>
                             </div>
                         </div>
