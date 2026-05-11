@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROL AKSES NAFAS</title>
+
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     
@@ -62,7 +65,6 @@
             background: rgba(0,0,0,0.4); font-weight: bold; font-family: 'Orbitron'; font-size: 14px;
         }
 
-        /* --- MODAL NOTIFIKASI SESUAI SCREENSHOT --- */
         #notifOverlay { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.85); z-index: 9999; 
@@ -101,18 +103,16 @@
         }
     </style>
 </head>
-<body>
-
-    <div id="notifOverlay">
+<body oncontextmenu="return false;"> <div id="notifOverlay">
         <div class="notif-card">
-            <div class="notif-header">NOTIFIKASI ADMIN PUSAT</div>
+            <div class="notif-header">NOTIFIKASI PENGELOLA</div>
             <div id="notifMsg" class="notif-text">Pesan di sini</div>
             <button class="btn-close" onclick="tutupNotif()">OK</button>
         </div>
     </div>
 
     <div id="loginPage" class="container-box page active">
-        <h2>LOGIN ADMIN PUSAT</h2>
+        <h2>LOGIN PENGELOLA</h2>
         <input type="text" id="userInput" class="input-style" placeholder="Username" autocapitalize="none">
         <input type="password" id="passInput" class="input-style" placeholder="Password">
         <button class="btn-main" onclick="prosesLogin()">MASUK</button>
@@ -129,6 +129,13 @@
     </div>
 
     <script>
+        // 2. PROTEKSI INSPECT ELEMENT: Mematikan tombol F12 dan Ctrl+U
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+        };
+
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -172,8 +179,8 @@
 
         function updateAkses(bol) {
             dbConfig.child('akses_admin').set(bol);
-            // REVISI: Menggunakan istilah Admin Pusat untuk pengunci sistem
-            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nAdmin Pusat telah mengunci sistem.";
+            // REVISI: Menggunakan istilah Pengelola
+            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
             kirimNotif(info);
         }
 
