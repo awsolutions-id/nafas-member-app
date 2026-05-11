@@ -24,7 +24,7 @@
             overflow: hidden; 
         }
 
-        /* Kotak Login & Panel */
+        /* Kotak Login & Panel Utama */
         .container-box { 
             width: 90%; 
             max-width: 350px; 
@@ -50,7 +50,7 @@
             color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
         }
 
-        /* Halaman */
+        /* Navigasi Halaman */
         .page { display: none; }
         .page.active { display: block; }
 
@@ -76,7 +76,7 @@
             background: #0a061a; 
             border: 2px solid #00f2fe; /* Garis Neon Biru-Cyan */
             padding: 25px; border-radius: 20px; width: 85%; 
-            max-width: 300px; text-align: center; 
+            max-width: 310px; text-align: center; 
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
             animation: popUp 0.3s ease-out;
         }
@@ -94,7 +94,7 @@
         }
         .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; font-weight: 500; }
         
-        /* Tombol OK dengan Gradasi Magenta-Purple */
+        /* Tombol OK Magenta-Purple */
         .btn-close { 
             width: 100%;
             background: linear-gradient(45deg, #ff00cc, #3333ff); 
@@ -133,7 +133,7 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase
+        // Konfigurasi Firebase (Ganti dengan kunci asli Anda)
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -147,7 +147,7 @@
         firebase.initializeApp(firebaseConfig);
         const dbConfig = firebase.database().ref('app_config');
 
-        // Data Akun
+        // Data Akun Login
         const DATA_AKUN = [
             { u: "ketua1", p: "123" },
             { u: "admin1", p: "123" }
@@ -179,7 +179,8 @@
 
         function updateAkses(bol) {
             dbConfig.child('akses_admin').set(bol);
-            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nAplikasi telah dikunci kembali.";
+            // REVISI: Menggunakan kata Pengelola dan Admin
+            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
             kirimNotif(info);
         }
 
