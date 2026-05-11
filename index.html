@@ -68,7 +68,11 @@
         .top-buttons button { border: none; border-radius: 10px; padding: 10px 0; font-weight: 800; color: #fff; font-size: 10px; font-family: 'Orbitron', sans-serif; }
         
         .member-card { background: rgba(30, 20, 60, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px; margin-bottom: 12px; text-align: left; overflow: hidden; position: relative; }
-        .member-header { display: flex; align-items: center; gap: 20px; cursor: pointer; padding: 6px 10px 6px 15px; }
+        .member-header { display: flex; align-items: center; gap: 20px; cursor: pointer; padding: 6px 10px 6px 15px; position: relative; }
+        
+        /* ICON GEMBOK REVISI SEKARANG */
+        .gembok-icon { position: absolute; top: 10px; right: 40px; color: #00e5ff; font-size: 12px; opacity: 0.8; text-shadow: 0 0 5px #00e5ff; }
+
         .member-header::after { 
             content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
@@ -84,7 +88,7 @@
         .photo-ring::before { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: conic-gradient(#00e5ff,#8a2be2,#ff4fd8,#00e5ff); z-index: -1; }
         .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid rgba(0,0,0,0.6); }
         
-        .member-name h4 { font-size: 18px; font-weight: 900; margin-bottom: 2px; color: #fff; width: 90%; }
+        .member-name h4 { font-size: 18px; font-weight: 900; margin-bottom: 2px; color: #fff; width: 80%; }
         .member-name .id { color: #00e5ff; font-weight: 900; font-size: 13px; }
         .member-name .jabatan { color: rgba(255,255,255,0.8); font-weight: 700; font-size: 12px; }
 
@@ -277,6 +281,17 @@
         let members = [];
         let membersKeys = [];
 
+        // SISTEM KUNCI OTOMATIS: CEK SESI SAAT BUKA APP
+        window.addEventListener('load', () => {
+            const loggedIn = sessionStorage.getItem("isLoggedIn");
+            if (loggedIn === "true") {
+                document.getElementById('loginScreen').style.display = 'none';
+                showPage('pageBeranda');
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        });
+
         function customNotif(pesan, tipe = 'alert', callback = null) {
             const overlay = document.getElementById('neonNotifOverlay');
             const msg = document.getElementById('neonMessage');
@@ -304,7 +319,6 @@
             }
         }
 
-        // NOTIFIKASI REVISI
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
@@ -321,6 +335,7 @@
                     return;
                 }
                 if(u === USERNAME && p === PASSWORD) {
+                    sessionStorage.setItem("isLoggedIn", "true");
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
                 } else { 
@@ -332,10 +347,8 @@
         function logout() {
             customNotif("Keluar dari aplikasi?", 'confirm', (res) => {
                 if(res) {
-                    document.getElementById('user').value = "";
-                    document.getElementById('pass').value = "";
-                    document.getElementById('loginScreen').style.display = 'flex';
-                    showPage('pageBeranda');
+                    sessionStorage.removeItem("isLoggedIn");
+                    location.reload();
                 }
             });
         }
@@ -357,6 +370,10 @@
         }
 
         function showPage(id) {
+            if (sessionStorage.getItem("isLoggedIn") !== "true") {
+                document.getElementById('loginScreen').style.display = 'flex';
+                return;
+            }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             window.scrollTo(0,0);
@@ -468,6 +485,8 @@
                     card.className = "member-card";
                     card.innerHTML = `
                         <div class="member-header" onclick="this.parentElement.classList.toggle('active')">
+                            <div class="gembok-icon"><i class="fas fa-lock"></i></div>
+                            
                             <div class="photo-ring"><img src="${m.foto || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}"></div>
                             <div class="member-name">
                                 <h4>${m.nama}</h4>
