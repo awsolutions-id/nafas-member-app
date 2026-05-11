@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* Dasar & Tema Gelap */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: #0a061a; 
@@ -24,7 +23,6 @@
             overflow: hidden; 
         }
 
-        /* Kotak Login & Panel Utama */
         .container-box { 
             width: 90%; 
             max-width: 350px; 
@@ -50,7 +48,6 @@
             color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
         }
 
-        /* Navigasi Halaman */
         .page { display: none; }
         .page.active { display: block; }
 
@@ -74,7 +71,7 @@
         }
         .notif-card { 
             background: #0a061a; 
-            border: 2px solid #00f2fe; /* Garis Neon Biru-Cyan */
+            border: 2px solid #00f2fe; 
             padding: 25px; border-radius: 20px; width: 85%; 
             max-width: 310px; text-align: center; 
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
@@ -94,7 +91,6 @@
         }
         .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; font-weight: 500; }
         
-        /* Tombol OK Magenta-Purple */
         .btn-close { 
             width: 100%;
             background: linear-gradient(45deg, #ff00cc, #3333ff); 
@@ -109,14 +105,14 @@
 
     <div id="notifOverlay">
         <div class="notif-card">
-            <div class="notif-header">NOTIFIKASI ADMIN</div>
+            <div class="notif-header">NOTIFIKASI ADMIN PUSAT</div>
             <div id="notifMsg" class="notif-text">Pesan di sini</div>
             <button class="btn-close" onclick="tutupNotif()">OK</button>
         </div>
     </div>
 
     <div id="loginPage" class="container-box page active">
-        <h2>LOGIN PENGELOLA</h2>
+        <h2>LOGIN ADMIN PUSAT</h2>
         <input type="text" id="userInput" class="input-style" placeholder="Username" autocapitalize="none">
         <input type="password" id="passInput" class="input-style" placeholder="Password">
         <button class="btn-main" onclick="prosesLogin()">MASUK</button>
@@ -133,7 +129,6 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase (Ganti dengan kunci asli Anda)
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -147,7 +142,6 @@
         firebase.initializeApp(firebaseConfig);
         const dbConfig = firebase.database().ref('app_config');
 
-        // Data Akun Login
         const DATA_AKUN = [
             { u: "ketua1", p: "123" },
             { u: "admin1", p: "123" }
@@ -165,7 +159,6 @@
         function prosesLogin() {
             const u = document.getElementById('userInput').value.toLowerCase().trim();
             const p = document.getElementById('passInput').value.trim();
-            
             const cek = DATA_AKUN.find(acc => acc.u === u && acc.p === p);
             
             if(cek) {
@@ -179,8 +172,8 @@
 
         function updateAkses(bol) {
             dbConfig.child('akses_admin').set(bol);
-            // REVISI: Menggunakan kata Pengelola dan Admin
-            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
+            // REVISI: Menggunakan istilah Admin Pusat untuk pengunci sistem
+            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nAdmin Pusat telah mengunci sistem.";
             kirimNotif(info);
         }
 
@@ -198,4 +191,4 @@
         }
     </script>
 </body>
-</ht
+</html>
