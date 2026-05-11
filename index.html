@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NAFAS INDONESIA</title>
     
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex">
+    
     <link rel="icon" type="image/png" href="logo_nafas.png">
     <link rel="apple-touch-icon" href="logo_nafas.png">
     <link rel="manifest" href="manifest.json">
@@ -18,6 +21,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
+        /* CSS ASLI TETAP DI PERTAHANKAN */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { width: 100%; min-height: 100%; background: #0a061a; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden; }
         
@@ -28,7 +32,6 @@
         .login-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; outline: none; font-size: 13px; }
         .btn-login { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(90deg, #8e2de2, #f00073); color: white; font-weight: bold; font-family: 'Orbitron'; font-size: 14px; cursor: pointer; }
 
-        /* NOTIFIKASI REVISI: LEBIH KECIL & WARNA SERASI */
         #neonNotifOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100000; display: none; justify-content: center; align-items: center; }
         .neon-notif-box { width: 80%; max-width: 280px; background: #0d0d0d; border: 1.5px solid #00e5ff; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
         .neon-notif-header { font-family: 'Orbitron', sans-serif; color: #00e5ff; font-size: 11px; margin-bottom: 12px; font-weight: 900; letter-spacing: 1.5px; }
@@ -118,11 +121,11 @@
         .btn-action { border: none; padding: 10px 15px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; font-family: 'Orbitron', sans-serif; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
     <div id="neonNotifOverlay">
         <div class="neon-notif-box">
-            <div class="neon-notif-header" id="neonHeader">NOTIFIKASI ADMIN</div>
+            <div class="neon-notif-header" id="neonHeader">NOTIFIKASI SISTEM</div>
             <div id="neonMessage" class="neon-notif-msg">Pesan...</div>
             <input type="text" id="neonInput" class="btn-neon-input">
             <div class="neon-notif-btn-container">
@@ -246,6 +249,13 @@
     <input type="file" id="logoInput" hidden accept="image/*">
 
     <script>
+        // KEAMANAN: Mematikan F12, Ctrl+Shift+I, Ctrl+U (Inspect Element)
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+                return false;
+            }
+        };
+
         const firebaseConfig = {
             apiKey: "AIzaSyBX...", 
             authDomain: "nafas-member-app.firebaseapp.com",
@@ -269,7 +279,6 @@
         let members = [];
         let membersKeys = [];
 
-        // FUNGSI NOTIFIKASI KUSTOM REVISI
         function customNotif(pesan, tipe = 'alert', callback = null) {
             const overlay = document.getElementById('neonNotifOverlay');
             const msg = document.getElementById('neonMessage');
@@ -297,11 +306,11 @@
             }
         }
 
+        // KEAMANAN: Auto-Logout jika akses dikunci Admin Pusat
         configRef.child('akses_admin').on('value', (snap) => {
             const isAktif = snap.val();
             if (isAktif === false) {
-                // Perubahan: Admin Pusat diganti menjadi Pengelola
-                customNotif("AKSES DITUTUP: Pengelola telah mengunci sistem.", 'alert', () => location.reload());
+                customNotif("AKSES DITUTUP: Sistem telah dikunci oleh Admin Pusat.", 'alert', () => location.reload());
             }
         });
 
@@ -310,13 +319,13 @@
             const p = document.getElementById('pass').value;
             configRef.child('akses_admin').once('value', (snap) => {
                 if (snap.val() === false) {
-                    customNotif("Gagal Masuk: Akses sistem sedang TERTUTUP.");
+                    customNotif("Sistem sedang dikunci.");
                     return;
                 }
                 if(u === USERNAME && p === PASSWORD) {
                     document.getElementById('loginScreen').style.display = 'none';
                     showPage('pageBeranda');
-                } else { customNotif('Username atau Password Salah!'); }
+                } else { customNotif('Akses Ditolak!'); }
             });
         }
 
@@ -382,7 +391,7 @@
         function saveDataPopup() {
             popupRef.child(currentPopupKey).set(document.getElementById('popupText').value);
             document.getElementById('popupText').readOnly = true;
-            customNotif("Berhasil disimpan ke Awan!");
+            customNotif("Tersimpan!");
         }
 
         function openFormTambah() {
@@ -446,7 +455,7 @@
             };
             if(idx === -1) { dbRef.push(data); } else { dbRef.child(key).update(data); }
             closeForm();
-            customNotif("Data Member Berhasil Disimpan!");
+            customNotif("Data Disimpan!");
         }
 
         function renderMembers() {
@@ -516,33 +525,29 @@
 
         function hapusMember(idx) {
             const key = membersKeys[idx];
-            customNotif("Hapus data member ini dari Awan selamanya?", 'confirm', (res) => {
+            customNotif("Hapus permanen?", 'confirm', (res) => {
                 if(res) { dbRef.child(key).remove(); }
             });
         }
 
         function resetFoto() {
-            customNotif("PILIH METODE HAPUS FOTO:\n1. Hapus SEMUA Foto Member\n2. Hapus Foto Berdasarkan NOMOR ID\n\nKetik angka 1 atau 2:", 'prompt', (pilihan) => {
+            customNotif("1. Hapus SEMUA\n2. Hapus Per-ID\n\nKetik 1/2:", 'prompt', (pilihan) => {
                 if (pilihan === "1") {
-                    customNotif("PERINGATAN: Hapus SEMUA foto member di database?", 'confirm', (res) => {
+                    customNotif("Hapus semua foto?", 'confirm', (res) => {
                         if(res) {
                             membersKeys.forEach(key => dbRef.child(key).update({ foto: "" }));
-                            customNotif("Semua foto berhasil dihapus!");
+                            customNotif("Terhapus!");
                         }
                     });
                 } else if (pilihan === "2") {
-                    customNotif("Masukkan Nomor ID Member yang fotonya ingin dihapus:", 'prompt', (idTarget) => {
+                    customNotif("Masukkan ID Member:", 'prompt', (idTarget) => {
                         if (idTarget) {
                             const memberDitemukan = members.findIndex(m => m.id == idTarget);
                             if (memberDitemukan !== -1) {
                                 const key = membersKeys[memberDitemukan];
-                                customNotif("Hapus foto untuk member ID: " + idTarget + " (" + members[memberDitemukan].nama + ")?", 'confirm', (res) => {
-                                    if(res) {
-                                        dbRef.child(key).update({ foto: "" });
-                                        customNotif("Foto Member ID " + idTarget + " berhasil direset!");
-                                    }
-                                });
-                            } else { customNotif("Maaf, Member dengan ID " + idTarget + " tidak ditemukan."); }
+                                dbRef.child(key).update({ foto: "" });
+                                customNotif("Foto ID " + idTarget + " Terhapus!");
+                            } else { customNotif("ID tidak ada!"); }
                         }
                     });
                 }
@@ -554,7 +559,7 @@
             members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href=url; a.download='data_member_nafas.csv'; a.click();
+            const a = document.createElement('a'); a.href=url; a.download='data_member.csv'; a.click();
         }
     </script>
 </body>
