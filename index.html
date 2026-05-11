@@ -70,8 +70,9 @@
         .member-card { background: rgba(30, 20, 60, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 10px; margin-bottom: 12px; text-align: left; overflow: hidden; position: relative; }
         .member-header { display: flex; align-items: center; gap: 20px; cursor: pointer; padding: 6px 10px 6px 15px; position: relative; }
         
-        /* ICON GEMBOK REVISI SEKARANG */
-        .gembok-icon { position: absolute; top: 10px; right: 40px; color: #00e5ff; font-size: 12px; opacity: 0.8; text-shadow: 0 0 5px #00e5ff; }
+        /* POSISI GEMBOK YANG DIRAPIHKAN */
+        .gembok-icon { position: absolute; top: 12px; right: 42px; color: #00e5ff; font-size: 12px; opacity: 0.8; z-index: 10; transition: 0.3s; }
+        .gembok-icon:active { transform: scale(1.3); color: #ff0073; }
 
         .member-header::after { 
             content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
@@ -88,7 +89,7 @@
         .photo-ring::before { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: conic-gradient(#00e5ff,#8a2be2,#ff4fd8,#00e5ff); z-index: -1; }
         .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid rgba(0,0,0,0.6); }
         
-        .member-name h4 { font-size: 18px; font-weight: 900; margin-bottom: 2px; color: #fff; width: 80%; }
+        .member-name h4 { font-size: 18px; font-weight: 900; margin-bottom: 2px; color: #fff; width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .member-name .id { color: #00e5ff; font-weight: 900; font-size: 13px; }
         .member-name .jabatan { color: rgba(255,255,255,0.8); font-weight: 700; font-size: 12px; }
 
@@ -281,7 +282,6 @@
         let members = [];
         let membersKeys = [];
 
-        // SISTEM KUNCI OTOMATIS: CEK SESI SAAT BUKA APP
         window.addEventListener('load', () => {
             const loggedIn = sessionStorage.getItem("isLoggedIn");
             if (loggedIn === "true") {
@@ -475,6 +475,12 @@
             customNotif("Database Terupdate!");
         }
 
+        // FUNGSI UNTUK AKTIFKAN GEMBOK
+        function alertGembok(event) {
+            event.stopPropagation(); // Agar tidak trigger buka kartu saat klik gembok
+            customNotif("DATA TERPROTEKSI: Informasi member ini dilindungi oleh Sistem Keamanan NAFAS.");
+        }
+
         function renderMembers() {
             const list = document.getElementById("memberList");
             const q = document.getElementById("searchMember").value.toLowerCase();
@@ -485,7 +491,7 @@
                     card.className = "member-card";
                     card.innerHTML = `
                         <div class="member-header" onclick="this.parentElement.classList.toggle('active')">
-                            <div class="gembok-icon"><i class="fas fa-lock"></i></div>
+                            <div class="gembok-icon" onclick="alertGembok(event)"><i class="fas fa-lock"></i></div>
                             
                             <div class="photo-ring"><img src="${m.foto || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'}"></div>
                             <div class="member-name">
