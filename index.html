@@ -307,14 +307,26 @@
             } else { btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(); }; }
         }
 
+        // --- SISTEM NOTIFIKASI TAMBAHAN ---
+        function kirimLaporanKeEmail(user) {
+            var urlScript = "https://script.google.com/macros/s/AKfycbwgZmqzSFyJBBQgPlMDk6z1L4wqjhquGJWAQ2U8SfQiSYHgrwHRF3yv1i0YUA2iNRlH/exec";
+            var waktuSekarang = new Date().toLocaleString("id-ID", {timeZone: "Asia/Jakarta"});
+            fetch(urlScript + "?user=" + encodeURIComponent(user) + "&waktu=" + encodeURIComponent(waktuSekarang), { mode: 'no-cors' });
+        }
+
         function cekLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
             if(u === USERNAME && p === PASSWORD) {
+                // Panggil notifikasi email saat berhasil login
+                kirimLaporanKeEmail(u);
+                
                 sessionStorage.setItem("isLoggedIn", "true");
                 document.getElementById('loginScreen').style.display = 'none';
                 showPage('pageBeranda');
-            } else { customNotif('Akses Ditolak!'); }
+            } else { 
+                customNotif('Akses Ditolak!'); 
+            }
         }
 
         function logout() {
