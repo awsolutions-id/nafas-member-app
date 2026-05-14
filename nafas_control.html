@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KONTROL AKSES NAFAS</title>
 
+    <link rel="icon" type="image/png" href="gembok.png">
+    <link rel="apple-touch-icon" href="gembok.png">
+    <link rel="manifest" href="manifest-control.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CONTROL NAFAS">
+
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="googlebot" content="noindex">
     
@@ -129,7 +135,6 @@
     </div>
 
     <script>
-        // 2. PROTEKSI INSPECT ELEMENT: Mematikan tombol F12 dan Ctrl+U
         document.onkeydown = function(e) {
             if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
                 return false;
@@ -179,7 +184,6 @@
 
         function updateAkses(bol) {
             dbConfig.child('akses_admin').set(bol);
-            // REVISI: Menggunakan istilah Pengelola
             const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
             kirimNotif(info);
         }
