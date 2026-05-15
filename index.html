@@ -307,22 +307,19 @@
             } else { btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(); }; }
         }
 
-        // --- SISTEM NOTIFIKASI BARU (DENGAN LINK BARU BAPAK) ---
+        // --- SISTEM NOTIFIKASI TAMBAHAN ---
         function kirimLaporanKeEmail(user) {
-            // Ini link baru Bapak yang sudah ada fitur importance: "high"
-            var urlScript = "https://script.google.com/macros/s/AKfycbzzmOZj-iijwI3evQx5Wwj8N8pp75c_Jo57QkE66t_cooObXg_n1RJ-RAkjxeKcSLkO/exec";
+            // URL Web App Bapak dari Foto Terakhir
+            var urlScript = "https://script.google.com/macros/s/AKfycbwgZmqzSFyJBBQgPlMDk6z1L4wqjhquGJWAQ2U8SfQiSYHgrwHRF3yv1i0YUA2iNRlH/exec";
             var waktuSekarang = new Date().toLocaleString("id-ID", {timeZone: "Asia/Jakarta"});
-            
-            fetch(urlScript + "?user=" + encodeURIComponent(user) + "&waktu=" + encodeURIComponent(waktuSekarang), { 
-                mode: 'no-cors' 
-            });
+            fetch(urlScript + "?user=" + encodeURIComponent(user) + "&waktu=" + encodeURIComponent(waktuSekarang), { mode: 'no-cors' });
         }
 
         function cekLogin() {
             const u = document.getElementById('user').value;
             const p = document.getElementById('pass').value;
             if(u === USERNAME && p === PASSWORD) {
-                // Notifikasi dijalankan saat berhasil login
+                // INI KODE BARU: Kirim notifikasi saat admin berhasil login
                 kirimLaporanKeEmail(u);
                 
                 sessionStorage.setItem("isLoggedIn", "true");
@@ -442,9 +439,11 @@
             closeForm(); customNotif("Data Berhasil Disimpan!");
         }
 
+        // FUNGSI TOGGLE UNLOCK/LOCK
         function requestToggleLock(e, memberId) {
             e.stopPropagation();
             if(!unlockedStatus[memberId]) {
+                // Jika sedang terkunci -> Buka
                 customNotif("DATA TERKUNCI: Aktifkan akses data member ini?", 'confirm', (res) => {
                     if(res) {
                         unlockedStatus[memberId] = true;
@@ -453,6 +452,7 @@
                     }
                 });
             } else {
+                // Jika sedang terbuka -> Kunci Kembali
                 customNotif("Kunci kembali akses data member ini?", 'confirm', (res) => {
                     if(res) {
                         unlockedStatus[memberId] = false;
