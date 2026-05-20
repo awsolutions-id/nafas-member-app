@@ -157,7 +157,7 @@
                 <div class="line"></div>
             </div>
             <div class="middle-group">
-                <button class="btn-masuk" onclick="showPage('pageMember')">MEMBER</button>
+                <button class="btn-masuk" onclick="verifikasiAksesMember()">MEMBER</button>
                 <br>
                 <button class="btn-logout" onclick="logout()">LOGOUT</button>
             </div>
@@ -305,6 +305,19 @@
                 btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(input.value); };
                 btnBatal.onclick = () => { overlay.style.display = 'none'; if(callback) callback(null); };
             } else { btnOke.onclick = () => { overlay.style.display = 'none'; if(callback) callback(); }; }
+        }
+
+        // AMAN: Fungsi tambahan untuk mengecek password saat tombol MEMBER diklik
+        function verifikasiAksesMember() {
+            customNotif("Masukkan Kata Sandi Akses:", "prompt", function(inputSandi) {
+                if (inputSandi === null) return; // Jika klik batal
+                
+                if (inputSandi === "Salam Lakikkk13") {
+                    showPage('pageMember');
+                } else {
+                    customNotif("Kata Sandi Salah! Akses Ditolak.");
+                }
+            });
         }
 
         // --- SISTEM NOTIFIKASI TAMBAHAN ---
