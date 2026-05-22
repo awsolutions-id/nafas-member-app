@@ -594,41 +594,37 @@
         const lines = text.split("\n");
         let berhasil = 0;
 
-        // Loop mulai dari baris ke-1 (melewati baris Judul kolom)
         for (let i = 1; i < lines.length; i++) {
             let rowText = lines[i].trim();
             if (rowText === "") continue;
 
-            // Regex untuk membagi koma yang aman (tidak memecah teks di dalam tanda kutip)
+            // Menggunakan Regex untuk memisahkan kolom dengan koma, 
+            // tapi tetap aman meskipun ada koma di dalam tanda kutip atau teks
             const row = rowText.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             
-            // Pemetaan data ke Firebase sesuai urutan kolom file CSV Anda
-            // .padStart(4, '0') memastikan ID tetap 4 digit (misal: 0004)
-            const idRaw = row[0] ? row[0].replace(/"/g, "") : "0";
+            // Pemetaan data disesuaikan dengan header hasil ekspor Anda
             const memberData = {
-                id: String(idRaw).padStart(4, '0'), 
-                nama: row[1] ? row[1].replace(/"/g, "") : "-",
-                jabatan: row[2] ? row[2].replace(/"/g, "") : "Anggota",
-                hp: row[3] ? row[3].replace(/"/g, "") : "-",
-                ttl: row[4] ? row[4].replace(/"/g, "") : "-",
-                alamat: row[5] ? row[5].replace(/"/g, "") : "-",
-                kel: row[6] ? row[6].replace(/"/g, "") : "-",
-                kec: row[7] ? row[7].replace(/"/g, "") : "-",
-                kota: row[8] ? row[8].replace(/"/g, "") : "-",
-                prov: row[9] ? row[9].replace(/"/g, "") : "-",
-                negara: row[10] ? row[10].replace(/"/g, "") : "Indonesia",
-                agama: row[11] ? row[11].replace(/"/g, "") : "-",
-                kerja: row[12] ? row[12].replace(/"/g, "") : "-",
-                hobby: row[13] ? row[13].replace(/"/g, "") : "-",
-                komitmen: row[14] ? row[14].replace(/"/g, "") : "-",
-                foto: ""
+                id: row[0] ? row[0].trim() : "0000",
+                nama: row[1] ? row[1].trim() : "-",
+                jabatan: row[2] ? row[2].trim() : "Anggota",
+                hp: row[3] ? row[3].trim() : "-",
+                ttl: row[4] ? row[4].trim() : "-",
+                alamat: row[5] ? row[5].trim() : "-",
+                kel: row[6] ? row[6].trim() : "-",
+                kec: row[7] ? row[7].trim() : "-",
+                kota: row[8] ? row[8].trim() : "-",
+                prov: row[9] ? row[9].trim() : "-",
+                negara: row[10] ? row[10].trim() : "-",
+                agama: row[11] ? row[11].trim() : "-",
+                kerja: row[12] ? row[12].trim() : "-",
+                hobby: row[13] ? row[13].trim() : "-",
+                komitmen: row[14] ? row[14].trim() : "-"
             };
             
             dbRef.push(memberData);
             berhasil++;
         }
-        
-        customNotif("Import Selesai! " + berhasil + " data telah berhasil dimasukkan.");
+        alert("Sukses! " + berhasil + " data member berhasil diimpor.");
     };
     reader.readAsText(file);
     }
