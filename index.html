@@ -195,7 +195,8 @@
                 <div class="top-buttons">
                     <button style="background:#d92c2c" onclick="resetFoto()">RESET FOTO</button>
                     <button style="background:#1faa58" onclick="openFormTambah()">TAMBAH</button>
-                    <button style="background:#2367ff" onclick="exportCSV()">EXPORT CSV</button>
+                    <button style="background:#2367ff" onclick="menuImportExport()">IMPORT/EXPORT</button>
+                    <input type="file" id="fileInputCSV" accept=".csv" hidden onchange="importCSV(event)">
                     <button style="background:#444" onclick="showPage('pageBeranda')">KEMBALI</button>
                 </div>
             </div>
