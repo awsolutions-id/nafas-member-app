@@ -589,24 +589,85 @@
     const file = event.target.files[0];
     if (!file) return;
 
+    const fileName = file.name.toLowerCase();
+
+    // ===== IMPORT EXCEL =====
+    if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+
+            const data = new Uint8Array(e.target.result);
+
+            const workbook = XLSX.read(data, { type: 'array' });
+
+            const sheetName = workbook.SheetNames[0];
+
+            const worksheet = workbook.Sheets[sheetName];
+
+            const json = XLSX.utils.sheet_to_json(worksheet);
+
+            let berhasil = 0;
+
+            json.forEach(row => {
+
+                const memberData = {
+                    id: row.ID || "0000",
+                    nama: (row.Nama || "-").toUpperCase(),
+                    jabatan: row.Jabatan || "Anggota",
+                    hp: row.HP || "-",
+                    ttl: row.TTL || "-",
+                    alamat: row.Alamat || "-",
+                    kel: row.Kelurahan || "-",
+                    kec: row.Kecamatan || "-",
+                    kota: row.Kota || "-",
+                    prov: row.Provinsi || "-",
+                    negara: row.Negara || "Indonesia",
+                    pos: row["Kode Pos"] || "-",
+                    agama: row.Agama || "-",
+                    kerja: row.Pekerjaan || "-",
+                    hobby: row.Hobby || "-",
+                    komitmen: row.Komitmen || "-",
+                    jk: row["Jenis Kelamin"] || "-",
+                    foto: ""
+                };
+
+                dbRef.push(memberData);
+
+                berhasil++;
+            });
+
+            customNotif("IMPORT EXCEL BERHASIL : " + berhasil + " MEMBER");
+        };
+
+        reader.readAsArrayBuffer(file);
+
+        return;
+    }
+
+    // ===== IMPORT CSV =====
     const reader = new FileReader();
+
     reader.onload = function(e) {
+
         const text = e.target.result;
+
         const lines = text.split("\n");
+
         let berhasil = 0;
 
         for (let i = 1; i < lines.length; i++) {
+
             let rowText = lines[i].trim();
+
             if (rowText === "") continue;
 
-            // Menggunakan Regex untuk memisahkan kolom dengan koma, 
-            // tapi tetap aman meskipun ada koma di dalam tanda kutip atau teks
             const row = rowText.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            
-            // Pemetaan data disesuaikan dengan header hasil ekspor Anda
+
             const memberData = {
                 id: row[0] ? row[0].trim() : "0000",
-                nama: row[1] ? row[1].trim() : "-",
+                nama: row[1] ? row[1].trim().toUpperCase() : "-",
                 jabatan: row[2] ? row[2].trim() : "Anggota",
                 hp: row[3] ? row[3].trim() : "-",
                 ttl: row[4] ? row[4].trim() : "-",
@@ -615,27 +676,32 @@
                 kec: row[7] ? row[7].trim() : "-",
                 kota: row[8] ? row[8].trim() : "-",
                 prov: row[9] ? row[9].trim() : "-",
-                negara: row[10] ? row[10].trim() : "-",
+                negara: row[10] ? row[10].trim() : "Indonesia",
                 agama: row[11] ? row[11].trim() : "-",
                 kerja: row[12] ? row[12].trim() : "-",
                 hobby: row[13] ? row[13].trim() : "-",
-                komitmen: row[14] ? row[14].trim() : "-"
+                komitmen: row[14] ? row[14].trim() : "-",
+                jk: "-",
+                foto: ""
             };
-            
+
             dbRef.push(memberData);
+
             berhasil++;
         }
-        alert("Sukses! " + berhasil + " data member berhasil diimpor.");
-    };
-    reader.readAsText(file);
-    }
+
+        customNotif("IMPORT CSV BERHASIL : " + berhasil + " MEMBER");
+        };
+
+        reader.readAsText(file);
+        }
     
         function exportCSV() {
             let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
             members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
             const a = document.createElement('a'); a.href=window.URL.createObjectURL(blob); a.download='data_member.csv'; a.click();
-    }
-  </script>
+        }
+   </script>
 </body>
 </html>
