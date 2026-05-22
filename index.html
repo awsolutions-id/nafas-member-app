@@ -574,7 +574,39 @@
             });
         }
 
-        function exportCSV() {
+        function menuImportExport() {
+            customNotif("Pilih Aksi:\n1. IMPORT (Unggah CSV)\n2. EXPORT (Unduh CSV)\n\nMasukkan 1 atau 2:", 'prompt', (p) => {
+                if (p == "1") {
+                    document.getElementById("fileInputCSV").click();
+                } else if (p == "2") {
+                    exportCSV();
+                }
+            });
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split("\n");
+                for (let i = 1; i < lines.length; i++) {
+                    const row = lines[i].split(",");
+                    if (row.length < 15) continue; 
+                    const memberData = {
+                        id: row[0], nama: row[1], jabatan: row[2], hp: row[3], ttl: row[4], 
+                        alamat: row[5], kel: row[6], kec: row[7], kota: row[8], prov: row[9],
+                        negara: row[10], agama: row[11], kerja: row[12], hobby: row[13], komitmen: row[14], foto: ""
+                    };
+                    dbRef.push(memberData);
+                }
+                customNotif("Data Berhasil Diimpor!");
+            };
+            reader.readAsText(file);
+         }
+        
+         function exportCSV() {
             let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
             members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
             const blob = new Blob([csv], {type:'text/csv'});
