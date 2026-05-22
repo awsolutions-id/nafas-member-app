@@ -585,33 +585,57 @@
         }
 
         function importCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split("\n");
-                for (let i = 1; i < lines.length; i++) {
-                    const row = lines[i].split(",");
-                    if (row.length < 15) continue; 
-                    const memberData = {
-                        id: row[0], nama: row[1], jabatan: row[2], hp: row[3], ttl: row[4], 
-                        alamat: row[5], kel: row[6], kec: row[7], kota: row[8], prov: row[9],
-                        negara: row[10], agama: row[11], kerja: row[12], hobby: row[13], komitmen: row[14], foto: ""
-                    };
-                    dbRef.push(memberData);
-                }
-                customNotif("Data Berhasil Diimpor!");
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split("\n");
+        let berhasil = 0;
+
+        // Loop dari baris ke-1 (melewati judul kolom/header)
+        for (let i = 1; i < lines.length; i++) {
+            let rowText = lines[i].trim();
+            if (rowText === "") continue;
+
+            // Menggunakan regex untuk membagi koma agar aman dari teks yang mengandung koma (seperti alamat)
+            const row = rowText.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            
+            // Kita buat objek data dengan default value jika kolom kurang
+            const memberData = {
+                id: row[0] || "-",
+                nama: row[1] || "-",
+                jabatan: row[2] || "Anggota",
+                hp: row[3] || "-",
+                ttl: row[4] || "-",
+                alamat: row[5] || "-",
+                kel: row[6] || "-",
+                kec: row[7] || "-",
+                kota: row[8] || "-",
+                prov: row[9] || "-",
+                negara: row[10] || "Indonesia",
+                agama: row[11] || "-",
+                kerja: row[12] || "-",
+                hobby: row[13] || "-",
+                komitmen: row[14] || "-",
+                foto: ""
             };
-            reader.readAsText(file);
-         }
-        
-         function exportCSV() {
-            let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
-            members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
-            const blob = new Blob([csv], {type:'text/csv'});
-            const a = document.createElement('a'); a.href=window.URL.createObjectURL(blob); a.download='data_member.csv'; a.click();
+            
+            dbRef.push(memberData);
+            berhasil++;
         }
-    </script>
+        customNotif("Selesai! " + berhasil + " data berhasil diimpor.");
+    };
+    reader.readAsText(file);
+    }
+    
+        function exportCSV() {
+    let csv = "ID,Nama,Jabatan,HP,TTL,Alamat,Kelurahan,Kecamatan,Kota,Provinsi,Negara,Agama,Pekerjaan,Hobby,Komitmen\n";
+    members.forEach(m=> csv += `${m.id},${m.nama},${m.jabatan},${m.hp},${m.ttl},${m.alamat},${m.kel},${m.kec},${m.kota},${m.prov},${m.negara},${m.agama},${m.kerja},${m.hobby},${m.komitmen}\n`);
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a'); a.href=window.URL.createObjectURL(blob); a.download='data_member.csv'; a.click();
+   }
+   </script>
 </body>
 </html>
