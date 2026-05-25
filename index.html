@@ -352,20 +352,20 @@
         }
 
         window.onload = function() {
-            // REALTIME STATUS AKSES
-        configRef.child('akses_admin').on('value', (snap) => {
+               // REALTIME STATUS AKSES
+           configRef.child('akses_admin').on('value', (snap) => {
 
-        const statusAkses = snap.val();
+                const statusAkses = snap.val();
 
-        if (statusAkses !== true) {
+                if (statusAkses !== true) {
 
-        showPage('pageBeranda');
+            showPage('pageBeranda');
 
-        unlockedStatus = {};
+                unlockedStatus = {};
 
-            }
+                }
 
-        });
+            });
             logoRef.on('value', (snap) => {
                 const url = snap.val();
                 if(url) document.getElementById('logoDisplay').innerHTML = `<img src="${url}">`;
