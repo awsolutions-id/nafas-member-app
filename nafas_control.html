@@ -8,198 +8,486 @@
     <link rel="icon" type="image/png" href="gembok.png">
     <link rel="apple-touch-icon" href="gembok.png">
     <link rel="manifest" href="manifest-control.json">
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="CONTROL NAFAS">
 
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="googlebot" content="noindex">
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: #0a061a; 
-            font-family: 'Montserrat', sans-serif; 
-            color: white; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            overflow: hidden; 
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
         }
 
-        .container-box { 
-            width: 90%; 
-            max-width: 350px; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 20px; 
-            padding: 30px; 
-            text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        body{
+            background:#0a061a;
+            font-family:'Montserrat',sans-serif;
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            overflow:hidden;
         }
 
-        h2 { font-family: 'Orbitron', sans-serif; color: #00e5ff; margin-bottom: 20px; font-size: 1.2rem; letter-spacing: 1px; }
-        
-        .input-style { 
-            width: 100%; padding: 12px; margin-bottom: 15px; 
-            border-radius: 10px; border: 1px solid #333; 
-            background: #000; color: white; outline: none; text-align: center; 
+        .container-box{
+            width:90%;
+            max-width:350px;
+            background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:20px;
+            padding:30px;
+            text-align:center;
+            box-shadow:0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .btn-main { 
-            width: 100%; padding: 14px; border: none; border-radius: 10px; 
-            background: linear-gradient(90deg, #8e2de2, #f00073); 
-            color: white; font-weight: bold; cursor: pointer; font-family: 'Orbitron';
+        h2{
+            font-family:'Orbitron',sans-serif;
+            color:#00e5ff;
+            margin-bottom:20px;
+            font-size:1.2rem;
+            letter-spacing:1px;
         }
 
-        .page { display: none; }
-        .page.active { display: block; }
-
-        .btn-control { 
-            width: 100%; padding: 15px; margin: 10px 0; 
-            border: none; border-radius: 10px; color: white; 
-            font-weight: bold; cursor: pointer; font-family: 'Orbitron'; 
+        .input-style{
+            width:100%;
+            padding:12px;
+            margin-bottom:15px;
+            border-radius:10px;
+            border:1px solid #333;
+            background:#000;
+            color:white;
+            outline:none;
+            text-align:center;
         }
 
-        .status-display { 
-            padding: 15px; margin-bottom: 20px; border-radius: 10px; 
-            background: rgba(0,0,0,0.4); font-weight: bold; font-family: 'Orbitron'; font-size: 14px;
+        .btn-main{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:linear-gradient(90deg,#8e2de2,#f00073);
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+            font-family:'Orbitron';
         }
 
-        #notifOverlay { 
-            display: none; position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.85); z-index: 9999; 
-            justify-content: center; align-items: center; 
-            backdrop-filter: blur(5px);
+        .page{
+            display:none;
         }
-        .notif-card { 
-            background: #0a061a; 
-            border: 2px solid #00f2fe; 
-            padding: 25px; border-radius: 20px; width: 85%; 
-            max-width: 310px; text-align: center; 
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-            animation: popUp 0.3s ease-out;
+
+        .page.active{
+            display:block;
         }
-        @keyframes popUp {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+
+        .btn-control{
+            width:100%;
+            padding:15px;
+            margin:10px 0;
+            border:none;
+            border-radius:10px;
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+            font-family:'Orbitron';
         }
-        .notif-header {
-            font-family: 'Orbitron', sans-serif;
-            color: #00f2fe;
-            font-size: 13px;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-            font-weight: bold;
+
+        .status-display{
+            padding:15px;
+            margin-bottom:20px;
+            border-radius:10px;
+            background:rgba(0,0,0,0.4);
+            font-weight:bold;
+            font-family:'Orbitron';
+            font-size:14px;
         }
-        .notif-text { margin-bottom: 20px; line-height: 1.6; font-size: 14px; color: #fff; font-weight: 500; }
-        
-        .btn-close { 
-            width: 100%;
-            background: linear-gradient(45deg, #ff00cc, #3333ff); 
-            color: white; border: none; 
-            padding: 12px 25px; border-radius: 10px; font-weight: bold; 
-            cursor: pointer; font-family: 'Orbitron'; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(255, 0, 204, 0.3);
+
+        #notifOverlay{
+            display:none;
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.85);
+            z-index:9999;
+            justify-content:center;
+            align-items:center;
+            backdrop-filter:blur(5px);
         }
+
+        .notif-card{
+            background:#0a061a;
+            border:2px solid #00f2fe;
+            padding:25px;
+            border-radius:20px;
+            width:85%;
+            max-width:310px;
+            text-align:center;
+            box-shadow:0 0 20px rgba(0,242,254,0.5);
+            animation:popUp 0.3s ease-out;
+        }
+
+        @keyframes popUp{
+            from{
+                transform:scale(0.8);
+                opacity:0;
+            }
+            to{
+                transform:scale(1);
+                opacity:1;
+            }
+        }
+
+        .notif-header{
+            font-family:'Orbitron',sans-serif;
+            color:#00f2fe;
+            font-size:13px;
+            margin-bottom:15px;
+            letter-spacing:2px;
+            font-weight:bold;
+        }
+
+        .notif-text{
+            margin-bottom:20px;
+            line-height:1.6;
+            font-size:14px;
+            color:#fff;
+            font-weight:500;
+        }
+
+        .btn-close{
+            width:100%;
+            background:linear-gradient(45deg,#ff00cc,#3333ff);
+            color:white;
+            border:none;
+            padding:12px 25px;
+            border-radius:10px;
+            font-weight:bold;
+            cursor:pointer;
+            font-family:'Orbitron';
+            font-size:14px;
+            box-shadow:0 4px 10px rgba(255,0,204,0.3);
+        }
+
     </style>
+
 </head>
-<body oncontextmenu="return false;"> <div id="notifOverlay">
-        <div class="notif-card">
-            <div class="notif-header">NOTIFIKASI PENGELOLA</div>
-            <div id="notifMsg" class="notif-text">Pesan di sini</div>
-            <button class="btn-close" onclick="tutupNotif()">OK</button>
+
+<body oncontextmenu="return false;">
+
+<div id="notifOverlay">
+
+    <div class="notif-card">
+
+        <div class="notif-header">
+            NOTIFIKASI PENGELOLA
         </div>
-    </div>
 
-    <div id="loginPage" class="container-box page active">
-        <h2>LOGIN PENGELOLA</h2>
-        <input type="text" id="userInput" class="input-style" placeholder="Username" autocapitalize="none">
-        <input type="password" id="passInput" class="input-style" placeholder="Password">
-        <button class="btn-main" onclick="prosesLogin()">MASUK</button>
-    </div>
-
-    <div id="adminPanel" class="container-box page">
-        <h2>PANEL KONTROL</h2>
-        <div id="statusLabel" class="status-display">MENGECEK STATUS...</div>
-        <button class="btn-control" style="background:#27ae60" onclick="updateAkses(true)">BUKA AKSES</button>
-        <button class="btn-control" style="background:#c0392b" onclick="updateAkses(false)">TUTUP AKSES</button>
-        <div style="margin-top: 20px;">
-            <button style="background:none; border:none; color:#666; cursor:pointer;" onclick="location.reload()">KELUAR (LOGOUT)</button>
+        <div id="notifMsg" class="notif-text">
+            Pesan di sini
         </div>
+
+        <button class="btn-close" onclick="tutupNotif()">
+            OK
+        </button>
+
     </div>
 
-    <script>
-        document.onkeydown = function(e) {
-            if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
-                return false;
+</div>
+
+<div id="loginPage" class="container-box page active">
+
+    <h2>LOGIN PENGELOLA</h2>
+
+    <input
+        type="text"
+        id="userInput"
+        class="input-style"
+        placeholder="Username"
+        autocapitalize="none"
+    >
+
+    <input
+        type="password"
+        id="passInput"
+        class="input-style"
+        placeholder="Password"
+    >
+
+    <button class="btn-main" onclick="prosesLogin()">
+        MASUK
+    </button>
+
+</div>
+
+<div id="adminPanel" class="container-box page">
+
+    <h2>PANEL KONTROL</h2>
+
+    <div id="statusLabel" class="status-display">
+        MENGECEK STATUS...
+    </div>
+
+    <button
+        class="btn-control"
+        style="background:#27ae60"
+        onclick="updateAkses(true)"
+    >
+        BUKA AKSES
+    </button>
+
+    <button
+        class="btn-control"
+        style="background:#c0392b"
+        onclick="updateAkses(false)"
+    >
+        TUTUP AKSES
+    </button>
+
+    <div style="margin-top:20px;">
+
+        <button
+            style="background:none;border:none;color:#666;cursor:pointer;"
+            onclick="logoutPanel()"
+        >
+            KELUAR (LOGOUT)
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+document.onkeydown = function(e){
+
+    if(
+        event.keyCode == 123 ||
+        (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) ||
+        (e.ctrlKey && e.keyCode == 85)
+    ){
+        return false;
+    }
+
+};
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyBX...",
+    authDomain: "nafas-member-app.firebaseapp.com",
+    databaseURL: "https://nafas-member-app-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "nafas-member-app",
+    storageBucket: "nafas-member-app.appspot.com",
+    messagingSenderId: "1001199591736",
+    appId: "1:1001199591736:web:fdd9814c9c47feb92021cd"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const dbConfig = firebase.database().ref('app_config');
+
+
+// ==============================
+// LOGIN PANEL LOKAL
+// ==============================
+
+const DATA_AKUN = [
+
+    { u:"ketua1", p:"123" },
+    { u:"admin1", p:"123" }
+
+];
+
+
+// ==============================
+// EMAIL FIREBASE UTAMA
+// ==============================
+
+const EMAIL_FIREBASE = "naafcfast@gmail.com";
+
+/*
+GANTI PASSWORD DI BAWAH
+DENGAN PASSWORD EMAIL FIREBASE ASLI
+*/
+
+const PASSWORD_FIREBASE = "PASSWORDANDA";
+
+
+// ==============================
+// NOTIFIKASI
+// ==============================
+
+function kirimNotif(teks){
+
+    document.getElementById('notifMsg').innerText = teks;
+
+    document.getElementById('notifOverlay').style.display = 'flex';
+
+}
+
+function tutupNotif(){
+
+    document.getElementById('notifOverlay').style.display = 'none';
+
+}
+
+
+// ==============================
+// LOGIN
+// ==============================
+
+async function prosesLogin(){
+
+    const u = document
+        .getElementById('userInput')
+        .value
+        .toLowerCase()
+        .trim();
+
+    const p = document
+        .getElementById('passInput')
+        .value
+        .trim();
+
+    const cek = DATA_AKUN.find(
+        acc => acc.u === u && acc.p === p
+    );
+
+    if(!cek){
+
+        kirimNotif("Username atau Password salah.");
+
+        return;
+
+    }
+
+    try{
+
+        // LOGIN FIREBASE
+
+        await firebase.auth().signInWithEmailAndPassword(
+            EMAIL_FIREBASE,
+            PASSWORD_FIREBASE
+        );
+
+        document
+            .getElementById('loginPage')
+            .classList
+            .remove('active');
+
+        document
+            .getElementById('adminPanel')
+            .classList
+            .add('active');
+
+        hubungkanStatus();
+
+        kirimNotif("LOGIN BERHASIL");
+
+    }catch(err){
+
+        console.log(err);
+
+        kirimNotif(
+            "Login Firebase gagal.\nPeriksa email/password Firebase."
+        );
+
+    }
+
+}
+
+
+// ==============================
+// UPDATE STATUS AKSES
+// ==============================
+
+async function updateAkses(bol){
+
+    try{
+
+        await dbConfig
+            .child('akses_admin')
+            .set(bol);
+
+        const info = bol
+            ? "AKSES DIBUKA!\nSekarang Admin bisa login."
+            : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
+
+        kirimNotif(info);
+
+    }catch(err){
+
+        console.log(err);
+
+        kirimNotif("Gagal mengubah status akses!");
+
+    }
+
+}
+
+
+// ==============================
+// MONITOR STATUS
+// ==============================
+
+function hubungkanStatus(){
+
+    dbConfig
+        .child('akses_admin')
+        .on('value',(snap)=>{
+
+            const el = document.getElementById('statusLabel');
+
+            if(snap.val() === true){
+
+                el.innerText = "STATUS : TERBUKA";
+
+                el.style.color = "#2ecc71";
+
+            }else{
+
+                el.innerText = "STATUS : TERTUTUP";
+
+                el.style.color = "#e74c3c";
+
             }
-        };
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBX...", 
-            authDomain: "nafas-member-app.firebaseapp.com",
-            databaseURL: "https://nafas-member-app-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "nafas-member-app",
-            storageBucket: "nafas-member-app.appspot.com",
-            messagingSenderId: "1001199591736",
-            appId: "1:1001199591736:web:fdd9814c9c47feb92021cd"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const dbConfig = firebase.database().ref('app_config');
+        });
 
-        const DATA_AKUN = [
-            { u: "ketua1", p: "123" },
-            { u: "admin1", p: "123" }
-        ];
+}
 
-        function kirimNotif(teks) {
-            document.getElementById('notifMsg').innerText = teks;
-            document.getElementById('notifOverlay').style.display = 'flex';
-        }
 
-        function tutupNotif() {
-            document.getElementById('notifOverlay').style.display = 'none';
-        }
+// ==============================
+// LOGOUT
+// ==============================
 
-        function prosesLogin() {
-            const u = document.getElementById('userInput').value.toLowerCase().trim();
-            const p = document.getElementById('passInput').value.trim();
-            const cek = DATA_AKUN.find(acc => acc.u === u && acc.p === p);
-            
-            if(cek) {
-                document.getElementById('loginPage').classList.remove('active');
-                document.getElementById('adminPanel').classList.add('active');
-                hubungkanStatus();
-            } else {
-                kirimNotif("Username atau Password salah ketik.");
-            }
-        }
+async function logoutPanel(){
 
-        function updateAkses(bol) {
-            dbConfig.child('akses_admin').set(bol);
-            const info = bol ? "AKSES DIBUKA!\nSekarang Admin bisa login." : "AKSES DITUTUP!\nPengelola telah mengunci sistem.";
-            kirimNotif(info);
-        }
+    try{
 
-        function hubungkanStatus() {
-            dbConfig.child('akses_admin').on('value', (snap) => {
-                const el = document.getElementById('statusLabel');
-                if(snap.val() === true) {
-                    el.innerText = "STATUS: TERBUKA";
-                    el.style.color = "#2ecc71";
-                } else {
-                    el.innerText = "STATUS: TERTUTUP";
-                    el.style.color = "#e74c3c";
-                }
-            });
-        }
-    </script>
+        await firebase.auth().signOut();
+
+        location.reload();
+
+    }catch(err){
+
+        location.reload();
+
+    }
+
+}
+
+</script>
+
 </body>
 </html>
