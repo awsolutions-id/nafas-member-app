@@ -13,127 +13,119 @@
 
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="googlebot" content="noindex">
-
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: #0a061a;
-            font-family: 'Montserrat', sans-serif;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+        body { 
+            background: #0a061a; 
+            font-family: 'Montserrat', sans-serif; 
+            color: white; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
         }
 
-        .container-box {
-            width: 90%;
-            max-width: 350px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
+        .container-box { 
+            width: 90%; 
+            max-width: 350px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            padding: 30px; 
+            text-align: center; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: #00e5ff;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+        h2 { 
+            font-family: 'Orbitron', sans-serif; 
+            color: #00e5ff; 
+            margin-bottom: 20px; 
+            font-size: 1.2rem; 
+            letter-spacing: 1px; 
+        }
+        
+        .input-style { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #333; 
+            background: #000; 
+            color: white; 
+            outline: none; 
+            text-align: center; 
         }
 
-        .input-style {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #000;
-            color: white;
-            outline: none;
-            text-align: center;
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #8e2de2, #f00073);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
+        .btn-main { 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 10px; 
+            background: linear-gradient(90deg, #8e2de2, #f00073); 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
             font-family: 'Orbitron';
         }
 
         .page { display: none; }
         .page.active { display: block; }
 
-        .btn-control {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Orbitron';
+        .btn-control { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: none; 
+            border-radius: 10px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-family: 'Orbitron'; 
         }
 
-        .status-display {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.4);
-            font-weight: bold;
-            font-family: 'Orbitron';
+        .status-display { 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 10px; 
+            background: rgba(0,0,0,0.4); 
+            font-weight: bold; 
+            font-family: 'Orbitron'; 
             font-size: 14px;
         }
 
-        #notifOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
+        #notifOverlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.85); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center; 
             backdrop-filter: blur(5px);
         }
 
-        .notif-card {
-            background: #0a061a;
-            border: 2px solid #00f2fe;
-            padding: 25px;
-            border-radius: 20px;
-            width: 85%;
-            max-width: 310px;
-            text-align: center;
+        .notif-card { 
+            background: #0a061a; 
+            border: 2px solid #00f2fe; 
+            padding: 25px; 
+            border-radius: 20px; 
+            width: 85%; 
+            max-width: 310px; 
+            text-align: center; 
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
             animation: popUp 0.3s ease-out;
         }
 
         @keyframes popUp {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .notif-header {
@@ -145,24 +137,24 @@
             font-weight: bold;
         }
 
-        .notif-text {
-            margin-bottom: 20px;
-            line-height: 1.6;
-            font-size: 14px;
-            color: #fff;
-            font-weight: 500;
+        .notif-text { 
+            margin-bottom: 20px; 
+            line-height: 1.6; 
+            font-size: 14px; 
+            color: #fff; 
+            font-weight: 500; 
         }
-
-        .btn-close {
+        
+        .btn-close { 
             width: 100%;
-            background: linear-gradient(45deg, #ff00cc, #3333ff);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: 'Orbitron';
+            background: linear-gradient(45deg, #ff00cc, #3333ff); 
+            color: white; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-family: 'Orbitron'; 
             font-size: 14px;
             box-shadow: 0 4px 10px rgba(255, 0, 204, 0.3);
         }
@@ -182,57 +174,41 @@
 <div id="loginPage" class="container-box page active">
     <h2>LOGIN PENGELOLA</h2>
 
-    <input type="email"
-           id="userInput"
-           class="input-style"
-           placeholder="Email Firebase">
+    <input type="text" id="userInput" class="input-style" placeholder="Username" autocapitalize="none">
 
-    <input type="password"
-           id="passInput"
-           class="input-style"
-           placeholder="Password Firebase">
+    <input type="password" id="passInput" class="input-style" placeholder="Password">
 
-    <button class="btn-main" onclick="prosesLogin()">
-        MASUK
-    </button>
+    <button class="btn-main" onclick="prosesLogin()">MASUK</button>
 </div>
 
 <div id="adminPanel" class="container-box page">
-
     <h2>PANEL KONTROL</h2>
 
     <div id="statusLabel" class="status-display">
         MENGECEK STATUS...
     </div>
 
-    <button class="btn-control"
-            style="background:#27ae60"
-            onclick="updateAkses(true)">
+    <button class="btn-control" style="background:#27ae60" onclick="updateAkses(true)">
         BUKA AKSES
     </button>
 
-    <button class="btn-control"
-            style="background:#c0392b"
-            onclick="updateAkses(false)">
+    <button class="btn-control" style="background:#c0392b" onclick="updateAkses(false)">
         TUTUP AKSES
     </button>
 
-    <div style="margin-top:20px;">
-        <button style="background:none;border:none;color:#666;cursor:pointer;"
-                onclick="logoutAdmin()">
+    <div style="margin-top: 20px;">
+        <button style="background:none; border:none; color:#666; cursor:pointer;" onclick="location.reload()">
             KELUAR (LOGOUT)
         </button>
     </div>
-
 </div>
 
 <script>
 
 document.onkeydown = function(e) {
-    if (
+    if(
         event.keyCode == 123 ||
-        (e.ctrlKey && e.shiftKey &&
-        (e.keyCode == 73 || e.keyCode == 74)) ||
+        (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) ||
         (e.ctrlKey && e.keyCode == 85)
     ) {
         return false;
@@ -251,8 +227,11 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
 const dbConfig = firebase.database().ref('app_config');
+
+const DATA_AKUN = [
+    { u: "admin", p: "123" }
+];
 
 function kirimNotif(teks) {
     document.getElementById('notifMsg').innerText = teks;
@@ -263,60 +242,50 @@ function tutupNotif() {
     document.getElementById('notifOverlay').style.display = 'none';
 }
 
-async function prosesLogin() {
+function prosesLogin() {
 
-    const email = document.getElementById('userInput').value.trim();
-    const password = document.getElementById('passInput').value.trim();
+    const u = document.getElementById('userInput').value
+        .toLowerCase()
+        .trim();
 
-    if(email === "" || password === "") {
-        kirimNotif("Email dan Password wajib diisi.");
-        return;
-    }
+    const p = document.getElementById('passInput').value
+        .trim();
 
-    try {
+    const cek = DATA_AKUN.find(
+        acc => acc.u === u && acc.p === p
+    );
 
-        await auth.signInWithEmailAndPassword(email, password);
+    if(cek) {
 
-        document.getElementById('loginPage').classList.remove('active');
-        document.getElementById('adminPanel').classList.add('active');
+        document.getElementById('loginPage')
+            .classList.remove('active');
+
+        document.getElementById('adminPanel')
+            .classList.add('active');
 
         hubungkanStatus();
 
-        kirimNotif("LOGIN BERHASIL");
+    } else {
 
-    } catch(error) {
-
-        kirimNotif(
-            "Login gagal!\n\nPeriksa Email dan Password Firebase."
-        );
+        kirimNotif("Username atau Password salah.");
 
     }
 }
 
 function updateAkses(bol) {
 
-    dbConfig.child('akses_admin')
-    .set(bol)
-    .then(() => {
+    dbConfig.child('akses_admin').set(bol);
 
-        const info = bol
-        ? "AKSES DIBUKA!\nAdmin sekarang bisa login."
-        : "AKSES DITUTUP!\nSistem berhasil dikunci.";
+    const info = bol
+        ? "AKSES DIBUKA!\nAdmin bisa login."
+        : "AKSES DITUTUP!\nSistem telah dikunci.";
 
-        kirimNotif(info);
-
-    })
-    .catch(() => {
-
-        kirimNotif("Gagal mengubah status akses!");
-
-    });
+    kirimNotif(info);
 }
 
 function hubungkanStatus() {
 
-    dbConfig.child('akses_admin')
-    .on('value', (snap) => {
+    dbConfig.child('akses_admin').on('value', (snap) => {
 
         const el = document.getElementById('statusLabel');
 
@@ -329,20 +298,8 @@ function hubungkanStatus() {
 
             el.innerText = "STATUS: TERTUTUP";
             el.style.color = "#e74c3c";
-
         }
-
     });
-}
-
-function logoutAdmin() {
-
-    auth.signOut().then(() => {
-
-        location.reload();
-
-    });
-
 }
 
 </script>
